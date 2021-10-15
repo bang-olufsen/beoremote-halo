@@ -5,6 +5,8 @@ info:
   description: |
     The Home Automation System API allows you to interact with a Beoremote Halo.
 
+    Requires Beoremote Halo version 1.3.570
+
     ### Client Connection
     * Upon client connection to http socket 8080, a websocket upgrade request is required.
     * Throught the websocket connection the client must send a configuration
