@@ -1,0 +1,433 @@
+asyncapi: 2.0.0
+info:
+  title: Home Automation System API for the Bang & Olufsen Beoremote Halo
+  version: 1.0.1
+  description: |
+    The Home Automation System API allows you to interact with a Beoremote Halo.
+
+    ### Client Connection
+    * Upon client connection to http socket 8080, a websocket upgrade request is required.
+    * Throught the websocket connection the client must send a configuration
+    * Beoremote Halo will remain configured as long as a client is connected. In the event of a disconnect, the client must reconnect and resend the configuration.
+    * If a client connects to Beoremote Halo while a websocket connection is active, the current websocket connection is closed and the new client is able to perform a websocket upgrade.
+
+    ### Update Flow
+    * Client configures Beoremote Halo
+    * The client can update the elements in the configuration passed to Beoremote Halo.
+    * Updates are cached on Beoremote Halo, and some updates tempoaraly changed the behaviour of Beoremote Halo e.g. Uupdate Display Page.
+
+    ### Event Flow
+    * Halo sends Event notifications upon user interaction; system, status, power, button, and wheel events.
+
+    ### License
+    Copyright 2021 Bang & Olufsen a/s
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+servers:
+  production:
+    url: halo-hostname:8080
+    protocol: ws
+    description: WebSocket
+    variables:
+      port:
+        default: '8080'
+
+channels:
+  /:
+    publish:
+      description: Home Automation system to Beoremote Halo.
+      operationId: Publications
+      message:
+        oneOf:
+          - $ref: '#/components/messages/configuration'
+          - $ref: '#/components/messages/update'
+
+    subscribe:
+      description: Beoremote Halo to Home Automation system.
+      operationId: Subscriptions
+      message:
+        oneOf:
+          - $ref: '#/components/messages/event'
+
+components:
+  messages:
+    configuration:
+      summary: Page layout configuration
+      description: The configuration contains the complete setup of the page(s) and button(s) Halo will present on the home automation screen. This can be used as a standalone setup or used together with a product.
+      payload:
+        $ref: '#/components/schemas/configuration'
+
+    update:
+      summary: Updates from Home Automation System which should be reflected on Halo
+      description: The Home Automation System is able to request different updates like a page update change, button update change or notification update which will be displayed on Halo until it is dismissed.
+      payload:
+        $ref: '#/components/schemas/update'
+
+    event:
+      summary: Events from Halo to Home Automation System
+      description: Halo will send status events when updates are received from the Home Automation System. System changes are sent when Halo switches power state. Power events are sent when the Halo battery charge state has changed. Button and wheel events are sent when operated. Errors messages are sent upon malformed configuration or update.
+      payload:
+        $ref: '#/components/schemas/event'
+
+  schemas:
+    configuration:
+      type: object
+      additionalProperties: true
+      required:
+        - configuration
+      properties:
+        configuration:
+          type: object
+          additionalProperties: true
+          required:
+            - version
+            - id
+            - pages
+          properties:
+            version:
+              type: string
+              default: 1.0.1
+            id:
+              type: string
+              format: uuid
+            pages:
+              type: array
+              minItems: 1
+              maxItems: 3
+              items:
+                type: object
+                required:
+                  - id
+                  - buttons
+                  - title
+                properties:
+                  title:
+                    type: string
+                  id:
+                    type: string
+                    format: uuid
+                  buttons:
+                    type: array
+                    minItems: 1
+                    maxItems: 8
+                    items:
+                      $ref: '#/components/schemas/button'
+
+    text:
+      type: object
+      required:
+        - text
+      properties:
+        text:
+          type: string
+          maximum: 6
+
+    icons:
+      type: object
+      required:
+        - icon
+      properties:
+        icon:
+          type: string
+          enum:
+            - alarm
+            - alternative
+            - arm_stay
+            - auto
+            - bath_tub
+            - blinds
+            - bliss
+            - butler
+            - cinema
+            - clean
+            - clock
+            - coffee
+            - cool
+            - creative
+            - curtains
+            - dinner
+            - disarm
+            - door
+            - doorlock
+            - energize
+            - enjoy
+            - entertain
+            - fan
+            - fireplace
+            - gaming
+            - garage
+            - gate
+            - good_morning
+            - good_night
+            - heat
+            - humidity
+            - indulge
+            - leaving
+            - lights
+            - lock
+            - meeting
+            - movie
+            - music
+            - notification
+            - off
+            - party
+            - pool
+            - privacy
+            - productive
+            - reading
+            - relax
+            - request_car
+            - rgb_lights
+            - romantic
+            - roof_window
+            - room_service
+            - security
+            - shades
+            - shower
+            - sleep
+            - smart_glass
+            - spa
+            - sprinkler
+            - travel
+            - turntable
+            - unlock
+            - vacation
+            - warning
+            - waterfall
+            - welcome
+            - window
+            - work_out
+            - yoga
+
+
+    button:
+      type: object
+      additionalProperties: true
+      required:
+        - id
+        - title
+        - content
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+          maximum: 15
+        subtitle:
+          type: string
+          maximum: 15
+        value:
+          type: integer
+          format: uint8
+          minimum: 0
+          maximum: 100
+        state:
+          type: string
+          enum:
+            - active
+            - inactive
+        content:
+          oneOf:
+            - $ref: '#/components/schemas/text'
+            - $ref: '#/components/schemas/icons'
+
+        default:
+          description: If set Beoremote Halo will show this button on wake up likewise Beoremote Halo will return to this button after a period of inactivity.
+          type: boolean
+
+    event:
+      type: object
+      additionalProperties: true
+      properties:
+        event:
+          oneOf:
+            - $ref: '#/components/schemas/statusEvent'
+            - $ref: '#/components/schemas/powerEvent'
+            - $ref: '#/components/schemas/systemEvent'
+            - $ref: '#/components/schemas/buttonEvent'
+            - $ref: '#/components/schemas/wheelEvent'
+
+    statusEvent:
+      type: object
+      additionalProperties: true
+      required:
+        - state
+        - type
+      properties:
+        type:
+          type: string
+          const: status
+        state:
+          type: string
+          enum:
+            - ok
+            - error
+        message:
+          type: string
+
+    systemEvent:
+      type: object
+      additionalProperties: true
+      required:
+        - type
+        - state
+      properties:
+        type:
+          type: string
+          const: system
+        state:
+          type: string
+          enum:
+            - active
+            - standby
+            - sleep
+
+    powerEvent:
+      type: object
+      additionalProperties: true
+      required:
+        - type
+        - capacity
+        - state
+      properties:
+        type:
+          type: string
+          const: power
+        capacity:
+          type: integer
+          format: uint8
+          minimum: 0
+          maximum: 100
+        state:
+          type: string
+          enum:
+            - charging
+            - full
+            - low
+            - critical
+            - fault
+            - discharging
+
+    buttonEvent:
+      type: object
+      additionalProperties: true
+      required:
+        - type
+        - id
+        - state
+      properties:
+        type:
+          type: string
+          const: button
+        id:
+          type: string
+          format: uuid
+        state:
+          type: string
+          enum:
+            - pressed
+            - released
+
+    wheelEvent:
+      type: object
+      additionalProperties: true
+      required:
+        - type
+        - id
+        - counts
+      properties:
+        type:
+          type: string
+          const: wheel
+        id:
+          type: string
+          format: uuid
+        counts:
+          type: integer
+          minimum: -5
+          maximum: 5
+
+    update:
+      type: object
+      additionalProperties: true
+      properties:
+        update:
+          oneOf:
+            - $ref: '#/components/schemas/updateButton'
+            - $ref: '#/components/schemas/updateNotification'
+            - $ref: '#/components/schemas/updateDisplayPage'
+      required:
+        - update
+
+    updateButton:
+      type: object
+      required:
+        - type
+        - id
+      properties:
+        type:
+          type: string
+          const: button
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        subtitle:
+          type: string
+        value:
+          type: integer
+          format: uint8
+          minimum: 0
+          maximum: 100
+        state:
+          type: string
+          enum:
+            - active
+            - inactive
+        content:
+          oneOf:
+            - $ref: '#/components/schemas/text'
+            - $ref: '#/components/schemas/icons'
+
+    updateNotification:
+      type: object
+      additionalProperties: true
+      required:
+        - type
+        - id
+      properties:
+        type:
+          type: string
+          const: notification
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        subtitle:
+          description: Up to 6 lines supported using new line character.
+          type: string
+
+    updateDisplayPage:
+      type: object
+      additionalProperties: true
+      required:
+        - type
+        - pageid
+      properties:
+        type:
+          type: string
+          const: displaypage
+        pageid:
+          type: string
+          format: uuid
+        buttonid:
+          type: string
+          format: uuid
