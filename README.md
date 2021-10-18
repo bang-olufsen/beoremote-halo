@@ -30,7 +30,20 @@ For further details on the Open API please also refer to the API description [he
 ### Todo:
 #### flowchart
 #### Link til Python script med
-#### Eksempler
+#### Prerequisites
+These examples have been tested using python3.9 and requires the following packages to run
+```
+pip3 install websocket-client zeroconf
+```
+#### Discover Beoremote Halo on the network
+```
+$ python3 discoverBeoremoteHalo.py
+If Beoremote Halo does not appear on the list, try waking it up while discovering in running.
+Press enter to exit...
+
+BeoremoteHalo-xxxxxxxx.local
+```
+#### Examples
 #### Link til Spec
 #### Link til Halo's product page
 #### Versionering

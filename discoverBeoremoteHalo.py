@@ -21,6 +21,6 @@ if __name__ == "__main__":
     try:
         input(
             "Discovering Beoremote Halo on network...\r\nIf Beoremote Halo does not appear on the list, try waking it "
-            "up while discovering in running.\r\n\r\nPress enter to exit...\n\n")
+            "up while discovering in running.\r\nPress enter to exit...\n\n")
     finally:
         zeroconf.close()
