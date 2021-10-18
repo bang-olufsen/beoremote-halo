@@ -12,13 +12,14 @@ def remove_nulls(d):
 
 
 class BeoRemoteHaloConfig:
+    version = '1.0.1'
 
     def __init__(self, pages):
         if type(pages) != list:
             pages = [pages]
-        self.configuration = {'version': "1.0.1", 'id': str(uuid.uuid1()), 'pages': pages}
+        self.configuration = {'version': BeoRemoteHaloConfig.version, 'id': str(uuid.uuid1()), 'pages': pages}
 
-    def toJSON(self, indent=None):
+    def to_json(self, indent=None):
         return json.dumps(self, default=lambda o: remove_nulls(o), indent=indent)
 
     class Page:
@@ -60,7 +61,7 @@ class BeoRemoteHaloConfig:
             self.text = text
 
 
-class Beoremote:
+class BeoRemoteHalo:
 
     def __init__(self, host, configuration=BeoRemoteHaloConfig):
         self.ws = websocket.WebSocketApp("ws://{0}:8080".format(host),
@@ -83,8 +84,8 @@ class Beoremote:
 
     def on_open(self, ws):
         time.sleep(1)
-        ws.send(self.configuration.toJSON())
-        print(self.configuration.toJSON(2))
+        ws.send(self.configuration.to_json())
+        print(self.configuration.to_json(2))
 
     def run(self):
         self.ws.run_forever()
@@ -108,6 +109,6 @@ if __name__ == "__main__":
         page = BeoRemoteHaloConfig.Page("Kitchen", [kitchenLight, ovenTimer])
 
         config = BeoRemoteHaloConfig(page)
-        remote = Beoremote(ipaddress, config)
+        remote = BeoRemoteHalo(ipaddress, config)
 
         remote.run()
