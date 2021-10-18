@@ -93,7 +93,7 @@ class BeoRemoteHalo:
 
 if __name__ == "__main__":
     if len(sys.argv) == 1:
-        print("usage: ConnectAndListen.py address")
+        print("usage: ConnectAndConfigure.py address")
         exit(1)
 
     if len(sys.argv) >= 2:
