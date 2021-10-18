@@ -105,7 +105,7 @@ if __name__ == "__main__":
         kitchenLight.set_subtitle("On")
 
         ovenTimer = BeoRemoteHaloConfig.Button("Oven Timer", BeoRemoteHaloConfig.ContentText("15:45"))
-        ovenTimer.set_subtitle("Temperature 200°")
+        ovenTimer.set_subtitle("Temperature 200°C")
         ovenTimer.set_default(True)
         ovenTimer.set_value(0)
 
@@ -114,8 +114,31 @@ if __name__ == "__main__":
         diningTable.set_state(False)
         diningTable.set_subtitle("Off")
 
-        page = BeoRemoteHaloConfig.Page("Kitchen", [kitchenLight, ovenTimer, diningTable])
-        config = BeoRemoteHaloConfig(page)
+        kitchen = BeoRemoteHaloConfig.Page("Kitchen", [kitchenLight, ovenTimer, diningTable])
+
+        fireplace = BeoRemoteHaloConfig.Button("Fire Place", BeoRemoteHaloConfig.ContentIcon("fireplace"))
+        fireplace.set_subtitle("Ignite")
+        fireplace.set_state(False)
+
+        blinds = BeoRemoteHaloConfig.Button("Blinds", BeoRemoteHaloConfig.ContentIcon("blinds"))
+        blinds.set_subtitle("Closed")
+        blinds.set_value(100)
+        blinds.set_state(True)
+
+        tvBackLight = BeoRemoteHaloConfig.Button("TV Backlight", BeoRemoteHaloConfig.ContentIcon("rgb_lights"))
+        tvBackLight.set_subtitle("Off")
+        tvBackLight.set_value(0)
+        tvBackLight.set_state(False)
+
+        livingRoomThermostat = BeoRemoteHaloConfig.Button("Thermostat", BeoRemoteHaloConfig.ContentText("21°C"))
+        livingRoomThermostat.set_subtitle("Heating")
+        livingRoomThermostat.set_value(55)
+        livingRoomThermostat.set_default(True)
+        livingRoomThermostat.set_state(False)
+
+        livingRoom = BeoRemoteHaloConfig.Page("Kitchen", [fireplace, blinds, tvBackLight, livingRoomThermostat])
+
+        config = BeoRemoteHaloConfig([kitchen, livingRoom])
         remote = BeoRemoteHalo(ipaddress, config)
 
         remote.run()
