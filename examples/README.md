@@ -1,4 +1,4 @@
-# Exmaples
+# Examples
 This directory contains three examples
 
 1. Connect and Listen
