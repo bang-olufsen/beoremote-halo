@@ -1,14 +1,20 @@
 # Beoremote Halo Home Automation Open API
 
-![](https://github.com/bang-olufsen/beoremote-halo/blob/main/Docs/Images/Halo%20CI%20silver%20wall.png)
+<img src="https://github.com/bang-olufsen/beoremote-halo/blob/main/Docs/Images/Halo%20CI%20silver%20wall.png" width=45% height=45% align="right">
+
+
 
 # Welcome
 The Home Automation System API is an open source API that allows you to interact with a Beoremote Halo from a control system.
-Using a websocket it is possible to create a configuration of buttons on the Beoremote Halo to work with your Home automation to control all your
+Using a websocket to communicate with the Beoremote Halo, it is possible to create a configuration of buttons on the Beoremote Halo to work with your Home automation to control all your
 Home Automation systems with an easy accessible and wellcrafted remote.
 The API works with both the Wall and the table versions of the Beoremote Halo. 
 
-You can find out more about Beoremote Halo on the Bang & Olufsen retail website here: 
+You can find out more about Beoremote Halo on the Bang & Olufsen retail website [here](https://www.bang-olufsen.com/en/us/accessories/beoremote-halo): 
+
+
+
+
 
 
 
