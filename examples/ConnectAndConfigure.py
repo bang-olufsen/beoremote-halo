@@ -102,12 +102,19 @@ if __name__ == "__main__":
         kitchenLight = BeoRemoteHaloConfig.Button("Kitchen Light", BeoRemoteHaloConfig.ContentIcon("lights"))
         kitchenLight.set_value(95)
         kitchenLight.set_state(True)
+        kitchenLight.set_subtitle("On")
 
         ovenTimer = BeoRemoteHaloConfig.Button("Oven Timer", BeoRemoteHaloConfig.ContentText("15:45"))
+        ovenTimer.set_subtitle("Temperature 200°")
         ovenTimer.set_default(True)
+        ovenTimer.set_value(0)
 
-        page = BeoRemoteHaloConfig.Page("Kitchen", [kitchenLight, ovenTimer])
+        diningTable = BeoRemoteHaloConfig.Button("Dining Table", BeoRemoteHaloConfig.ContentIcon("lights"))
+        diningTable.set_value(80)
+        diningTable.set_state(False)
+        diningTable.set_subtitle("Off")
 
+        page = BeoRemoteHaloConfig.Page("Kitchen", [kitchenLight, ovenTimer, diningTable])
         config = BeoRemoteHaloConfig(page)
         remote = BeoRemoteHalo(ipaddress, config)
 
