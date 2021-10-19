@@ -114,8 +114,6 @@ if __name__ == "__main__":
         diningTable.set_state(False)
         diningTable.set_subtitle("Off")
 
-        kitchen = BeoRemoteHaloConfig.Page("Kitchen", [kitchenLight, ovenTimer, diningTable])
-
         fireplace = BeoRemoteHaloConfig.Button("Fire Place", BeoRemoteHaloConfig.ContentIcon("fireplace"))
         fireplace.set_subtitle("Ignite")
         fireplace.set_state(False)
@@ -136,6 +134,7 @@ if __name__ == "__main__":
         livingRoomThermostat.set_default(True)
         livingRoomThermostat.set_state(False)
 
+        kitchen = BeoRemoteHaloConfig.Page("Kitchen", [kitchenLight, ovenTimer, diningTable])
         livingRoom = BeoRemoteHaloConfig.Page("Kitchen", [fireplace, blinds, tvBackLight, livingRoomThermostat])
 
         config = BeoRemoteHaloConfig([kitchen, livingRoom])
