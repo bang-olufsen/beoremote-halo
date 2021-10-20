@@ -1,13 +1,12 @@
 # Beoremote Halo Home Automation Open API
 
-<img src="https://github.com/bang-olufsen/beoremote-halo/blob/main/Docs/Images/Halo%20CI%20silver%20wall.png" width=45% height=45% align="right">
+<img src="https://github.com/bang-olufsen/beoremote-halo/blob/main/Docs/Images/Halo%20CI%20silver%20wall.png" width=40% height=40% align="right">
 
 
 
 ## Welcome
 The Home Automation System API is an open source API that allows you to interact with a Beoremote Halo from a control system.
-Using a websocket to communicate with the Beoremote Halo, it is possible to create a configuration of buttons on the Beoremote Halo to work with your Home automation to control all your
-Home Automation systems with an easily accessible and wellcrafted remote.
+Using a websocket to communicate with the Beoremote Halo, it is possible to create a configuration of buttons on the Beoremote Halo to work with your Home automation to control all your Home Automation systems with an easily accessible and wellcrafted remote.
 The API works with both the wall mounted and the table versions of the Beoremote Halo. 
 <br />
 <br />
@@ -15,21 +14,38 @@ You can find out more about Beoremote Halo on the Bang & Olufsen retail website 
 <br />
 <br />
 <br />
-<br />
 
 ## Connecting to Beoremote Halo
-Connection to Beoremote Halo is done using a websocket and connecting to Halo on Port:8080. 
+Using the Beoremote Halo as an extension you can control your smart home devices that are connected to your Home Automation control system.
+Beoremote Halo supports adding buttons with icons for most general Home automation applications and also has the option to create buttons with text. 
+<img src="https://github.com/bang-olufsen/beoremote-halo/blob/main/Docs/Images/Halo%20flow%200.png" width=75% height=75% align="center">
+
+
+Connection to Beoremote Halo is done using a websocket client connecting to Halos Websocket server using Beoremote Halos IP adress on Port:8080. 
 Once connection is established a configuration must be sent to the remote for it to configure the screens and buttons. 
 The Beoremote Halo will answer back with acknowledgements if the configuration was successful or not. 
 <br />
 
+<img src="https://github.com/bang-olufsen/beoremote-halo/blob/main/Docs/Images/HALO%20Flow1.png" width=85% height=85% align="center">
 
 
-For further details on the Open API please also refer to the API description [here](https://bang-olufsen.github.io/beoremote-halo/)
+After configuration it is possible to set the status of each button, for example to show if something has changed in the setup. 
 
-### Todo:
-#### flowchart
-#### Link til Python script med
+<img src="https://github.com/bang-olufsen/beoremote-halo/blob/main/Docs/Images/HALO%20Flow2.png" width=80% height=80% align="center">
+
+
+Halo will also send events on button press and wheel changes to the control system. 
+
+<img src="https://github.com/bang-olufsen/beoremote-halo/blob/main/Docs/Images/HALO%20Flow3.png" width=70% height=70% align="center">
+
+
+For further details on the Open API including list of commands, examples and icons please also refer to the API description [here](https://bang-olufsen.github.io/beoremote-halo/)
+
+
+## Python script
+To get you started you can find a demo implementation created in Python in our examples folder [here](https://github.com/bang-olufsen/beoremote-halo/tree/main/examples)
+
+
 #### Prerequisites
 These examples have been tested using python3.9 and requires the following packages to run
 ```
@@ -43,12 +59,8 @@ Press enter to exit...
 
 BeoremoteHalo-xxxxxxxx.local
 ```
-#### Examples
-#### Link til Spec
-#### Link til Halo's product page
-#### Versionering
 
-# Licence
+## Licence
 License
 Copyright 2021 Bang & Olufsen a/s
 
