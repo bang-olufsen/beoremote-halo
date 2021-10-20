@@ -31,12 +31,12 @@ The Beoremote Halo will answer back with acknowledgements if the configuration w
 
 After configuration it is possible to set the status of each button, for example to show if something has changed in the setup. 
 
-<img src="https://github.com/bang-olufsen/beoremote-halo/blob/main/Docs/Images/HALO%20Flow2.png" width=80% height=80% align="center">
+<img src="https://github.com/bang-olufsen/beoremote-halo/blob/main/Docs/Images/HALO%20Flow2.png" width=70% height=70% align="center">
 
 
 Halo will also send events on button press and wheel changes to the control system. 
 
-<img src="https://github.com/bang-olufsen/beoremote-halo/blob/main/Docs/Images/HALO%20Flow3.png" width=70% height=70% align="center">
+<img src="https://github.com/bang-olufsen/beoremote-halo/blob/main/Docs/Images/HALO%20Flow3.png" width=60% height=60% align="center">
 
 
 For further details on the Open API including list of commands, examples and icons please also refer to the API description [here](https://bang-olufsen.github.io/beoremote-halo/)
