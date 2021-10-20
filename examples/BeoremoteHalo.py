@@ -1,13 +1,27 @@
-import _thread
 import json
 import time
 import uuid
-import websocket
 from types import SimpleNamespace
 
+import websocket
 
-def remove_nulls(d):
+
+def remove_nones(d):
     return {k: v for k, v in d.__dict__.items() if v is not None}
+
+"""https://gist.github.com/nlohmann/c899442d8126917946580e7f84bf7ee7"""
+def remove_empty_elements(d):
+    """recursively remove empty lists, empty dicts, or None elements from a dictionary"""
+
+    def empty(x):
+        return x is None or x == {} or x == []
+
+    if not isinstance(d, (dict, list)):
+        return d
+    elif isinstance(d, list):
+        return [v for v in (remove_empty_elements(v) for v in d) if not empty(v)]
+    else:
+        return {k: v for k, v in ((k, remove_empty_elements(v)) for k, v in d.items()) if not empty(v)}
 
 
 class BeoRemoteHaloConfig:
@@ -19,7 +33,14 @@ class BeoRemoteHaloConfig:
         self.configuration = {'version': BeoRemoteHaloConfig.version, 'id': str(uuid.uuid1()), 'pages': pages}
 
     def to_json(self, indent=None):
-        return json.dumps(self, default=lambda o: remove_nulls(o), indent=indent)
+        return json.dumps(self, default=lambda o: remove_empty_elements(remove_nones(o)), indent=indent)
+
+    def __getitem__(self, item):
+        for page in self.configuration['pages']:
+            for button in page.buttons:
+                if button.id == item:
+                    return button
+        return None
 
     class Page:
         def __init__(self, title, buttons=None):
@@ -48,6 +69,12 @@ class BeoRemoteHaloConfig:
         def set_state(self, state=bool()):
             self.state = "active" if state else "inactive"
 
+        def toggle_state(self):
+            if self.state == "active":
+                self.state = "inactive"
+            else:
+                self.state = "active"
+
         def set_default(self, default=bool()):
             self.default = default
 
@@ -58,6 +85,15 @@ class BeoRemoteHaloConfig:
     class ContentText:
         def __init__(self, text):
             self.text = text
+
+
+class BeoRemoteHaloUpdateButton:
+    def __init__(self, id, content=None, title=None, subtitle=None, value=None, state=None):
+        self.update = {"type": "button", "id": id, "content": content, "title": title, "subtitle": subtitle,
+                       "value": value, "state": state}
+
+    def to_json(self):
+        return json.dumps(self, default=lambda o: remove_empty_elements(remove_nones(o)))
 
 
 class BeoRemoteHalo:
@@ -94,7 +130,6 @@ class BeoRemoteHalo:
                 'wheel': lambda msg: self.on_wheel_event(ws, msg)
             }[event.type](event)
 
-
     def on_close(self, ws, close_status_code, close_msg):
         if self.verbose:
             print("### Connection Closed ###")
@@ -117,7 +152,7 @@ class BeoremoteHaloExmaple(BeoRemoteHaloConfig):
         kitchenLight.set_state(True)
         kitchenLight.set_subtitle("On")
 
-        ovenTimer = BeoRemoteHaloConfig.Button("Oven Timer", BeoRemoteHaloConfig.ContentText("15:45"))
+        ovenTimer = BeoRemoteHaloConfig.Button("Oven Timer", BeoRemoteHaloConfig.ContentText("09:35"))
         ovenTimer.set_subtitle("Temperature 200°C")
         ovenTimer.set_default(True)
         ovenTimer.set_value(0)
