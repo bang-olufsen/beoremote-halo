@@ -9,20 +9,41 @@ The Home Automation System API is an open source API that allows you to interact
 Using a websocket to communicate with the Beoremote Halo, it is possible to create a configuration of buttons on the Beoremote Halo to work with your Home automation to control all your
 Home Automation systems with an easily accessible and wellcrafted remote.
 The API works with both the wall mounted and the table versions of the Beoremote Halo. 
-
+<br />
+<br />
 You can find out more about Beoremote Halo on the Bang & Olufsen retail website [here](https://www.bang-olufsen.com/en/us/accessories/beoremote-halo): 
+<br />
+<br />
+<br />
+<br />
+
+## Connecting to Beoremote Halo
+Connection to Beoremote Halo is done using a websocket and connecting to Halo on Port:8080. 
+Once connection is established a configuration must be sent to the remote for it to configure the screens and buttons. 
+The Beoremote Halo will answer back with acknowledgements if the configuration was successful or not. 
+<br />
 
 
 
-
-
-
-
+For further details on the Open API please also refer to the API description [here](https://bang-olufsen.github.io/beoremote-halo/)
 
 ### Todo:
 #### flowchart
 #### Link til Python script med
-#### Eksempler
+#### Prerequisites
+These examples have been tested using python3.9 and requires the following packages to run
+```
+pip3 install websocket-client zeroconf
+```
+#### Discover Beoremote Halo on the network
+```
+$ python3 discoverBeoremoteHalo.py
+If Beoremote Halo does not appear on the list, try waking it up while discovering in running.
+Press enter to exit...
+
+BeoremoteHalo-xxxxxxxx.local
+```
+#### Examples
 #### Link til Spec
 #### Link til Halo's product page
 #### Versionering
