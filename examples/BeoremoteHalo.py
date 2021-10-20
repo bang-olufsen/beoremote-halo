@@ -1,0 +1,89 @@
+import _thread
+import json
+import time
+import uuid
+import websocket
+
+
+def remove_nulls(d):
+    return {k: v for k, v in d.__dict__.items() if v is not None}
+
+
+class BeoRemoteHaloConfig:
+    version = '1.0.1'
+
+    def __init__(self, pages):
+        if type(pages) != list:
+            pages = [pages]
+        self.configuration = {'version': BeoRemoteHaloConfig.version, 'id': str(uuid.uuid1()), 'pages': pages}
+
+    def to_json(self, indent=None):
+        return json.dumps(self, default=lambda o: remove_nulls(o), indent=indent)
+
+    class Page:
+        def __init__(self, title, buttons=None):
+            self.title = title
+            self.id = str(uuid.uuid1())
+            if type(buttons) != list:
+                buttons = [buttons]
+            self.buttons = buttons
+
+    class Button:
+        def __init__(self, title, content, subtitle=None, value=None, state=None, default=None):
+            self.id = str(uuid.uuid1())
+            self.title = title
+            self.subtitle = subtitle
+            self.value = value
+            self.state = state
+            self.content = content
+            self.default = default
+
+        def set_subtitle(self, subtitle=str()):
+            self.subtitle = subtitle
+
+        def set_value(self, value=int()):
+            self.value = value
+
+        def set_state(self, state=bool()):
+            self.state = "active" if state else "inactive"
+
+        def set_default(self, default=bool()):
+            self.default = default
+
+    class ContentIcon:
+        def __init__(self, icon):
+            self.icon = icon
+
+    class ContentText:
+        def __init__(self, text):
+            self.text = text
+
+
+class BeoRemoteHalo:
+
+    def __init__(self, host, configuration=BeoRemoteHaloConfig):
+        self.ws = websocket.WebSocketApp("ws://{0}:8080".format(host),
+                                         on_open=self.on_open,
+                                         on_message=self.on_message,
+                                         on_close=self.on_close)
+        self.configuration = configuration
+
+    def run_forever(self):
+        def run():
+            self.ws.run_forever()
+
+        _thread.start_new_thread(run, ())
+
+    def on_message(self, ws, message):
+        print(message)
+
+    def on_close(self, ws, close_status_code, close_msg):
+        print("### Connection Closed ###")
+
+    def on_open(self, ws):
+        time.sleep(1)
+        ws.send(self.configuration.to_json())
+        print(self.configuration.to_json(2))
+
+    def run(self):
+        self.ws.run_forever()
