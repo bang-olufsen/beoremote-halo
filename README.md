@@ -49,17 +49,21 @@ To get you started you can find a demo implementation created in Python in our e
 
 #### Prerequisites
 These examples have been tested using python3.9 and requires the following packages to run
-```
-pip3 install websocket-client zeroconf
+```commandline
+$ pip3 install websocket-client zeroconf
 ```
 #### Discover Beoremote Halo on the network
-```
-$ python3 discoverBeoremoteHalo.py
-If Beoremote Halo does not appear on the list, try waking it up while discovering in running.
+Discover Beoremote Halo on the network using mDNS service, a python script is provided for ease of use called discover.py:
+```commandline
+$ python discover.py
+If Beoremote Halo does not appear on the list, try waking it up while discovery in running.
 Press enter to exit...
 
-BeoremoteHalo-xxxxxxxx.local
+BeoremoteHalo-XXXXXXXX.local
+...
 ```
+#### Home Automation Examples
+Three examples are located in [examples](https://github.com/bang-olufsen/beoremote-halo/tree/main/examples).
 
 ## Licence
 License
