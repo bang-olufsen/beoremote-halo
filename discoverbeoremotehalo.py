@@ -52,7 +52,7 @@ class BeoremoteHaloListener:
         :param name:
         """
         info = zero_conf.get_service_info(conf_type, name)
-        print("%s" % info.server[:-1])
+        print("{}".format(info.server[:-1]))
 
     @classmethod
     def update_service(cls, zero_conf, conf_type, name):
