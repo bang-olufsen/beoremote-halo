@@ -26,10 +26,10 @@ import sys
 import time
 from multiprocessing import Process, Semaphore
 
-from BeoremoteHalo import BeoRemoteHalo
-from BeoremoteHalo import BeoRemoteHaloConfig
-from BeoremoteHalo import BeoRemoteHaloUpdateButton
-from BeoremoteHalo import BeoremoteHaloExmaple
+from beoremotehalo import BeoRemoteHalo
+from beoremotehalo import BeoRemoteHaloConfig
+from beoremotehalo import BeoRemoteHaloUpdateButton
+from beoremotehalo import BeoremoteHaloExmaple
 
 config = BeoremoteHaloExmaple()
 semaphore = Semaphore(1)
