@@ -72,7 +72,7 @@ class BeoRemoteHaloConfig:
     version = '1.0.1'
 
     def __init__(self, pages):
-        if isinstance(pages, list):
+        if not isinstance(pages, list):
             pages = [pages]
         self.configuration = {'version': BeoRemoteHaloConfig.version, 'id': str(uuid.uuid1()),
                               'pages': pages}
@@ -101,7 +101,7 @@ class BeoRemoteHaloConfig:
         def __init__(self, title: str, buttons=None):
             self.title = title
             self.id = str(uuid.uuid1())  # pylint: disable=invalid-name
-            if isinstance(buttons, list):
+            if not isinstance(buttons, list):
                 buttons = [buttons]
             self.buttons = buttons
 

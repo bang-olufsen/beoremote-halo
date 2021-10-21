@@ -110,7 +110,7 @@ def on_button_event(beoremote_halo, event):
                 oven_timer["running"] = not oven_timer["running"]
             else:
                 if len(processes) > 0:
-                    print("resume timer")
+                    semaphore.release()
                     oven_timer["running"] = not oven_timer["running"]
                 else:
                     proc = Process(target=oven_timer_function,
