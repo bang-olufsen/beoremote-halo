@@ -48,43 +48,44 @@ def clamp(value, min_value, max_value):
     return max(min(value, max_value), min_value)
 
 
-def on_system_event(ws, event):
+def on_system_event(beoremote_halo, event):
     """
 
-    :param ws:
+    :param beoremote_halo:
     :param event:
     """
+    del beoremote_halo, event  # unused
 
 
-def on_wheel_event(ws, event):
+def on_wheel_event(beoremote_halo, event):
     """
 
-    :param ws:
+    :param beoremote_halo:
     :param event:
     """
     button = config[event.id]
     if button and button.value is not None:
         button.value = clamp(button.value + event.counts * 5, 0, 100)
         update = BeoRemoteHaloUpdateButton(event.id, value=button.value)
-        ws.send(update)
+        beoremote_halo.send(update)
 
 
-def oven_timer_function(ws, button_id, content):
+def oven_timer_function(beoremote_halo, button_id, content):
     """
 
-    :param ws:
+    :param beoremote_halo:
     :param button_id:
     :param content:
     """
     try:
         minutes, seconds = content.text.split(":")
-        for m in range(int(minutes), -1, -1):
-            for s in range(int(seconds), -1, -1):
+        for minute in range(int(minutes), -1, -1):
+            for second in range(int(seconds), -1, -1):
                 semaphore.acquire()
                 semaphore.release()
-                content = BeoRemoteHaloConfig.ContentText("{:02d}:{:02d}".format(m, s))
+                content = BeoRemoteHaloConfig.ContentText("{:02d}:{:02d}".format(minute, second))
                 update = BeoRemoteHaloUpdateButton(button_id, content=content)
-                ws.send(update)
+                beoremote_halo.send(update)
                 time.sleep(1)
             seconds = 59
     except KeyboardInterrupt:
@@ -105,7 +106,6 @@ def on_button_event(beoremote_halo, event):
 
         if button and button.title == "Oven Timer":
             if oven_timer["running"]:
-                """pause"""
                 semaphore.acquire()
                 oven_timer["running"] = not oven_timer["running"]
             else:
@@ -113,11 +113,11 @@ def on_button_event(beoremote_halo, event):
                     print("resume timer")
                     oven_timer["running"] = not oven_timer["running"]
                 else:
-                    """start"""
-                    p = Process(target=oven_timer_function, args=(beoremote_halo, event.id, button.content))
+                    proc = Process(target=oven_timer_function,
+                                   args=(beoremote_halo, event.id, button.content))
                     oven_timer["running"] = True
-                    processes.append(p)
-                    p.start()
+                    processes.append(proc)
+                    proc.start()
 
 
 if __name__ == "__main__":
