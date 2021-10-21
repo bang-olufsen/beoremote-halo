@@ -6,11 +6,11 @@ This directory contains three examples
    Listen: [connect_and_listen.py](https://github.com/bang-olufsen/beoremote-halo/blob/main/examples/connect_and_listen.py)
 
    Creates a websocket client to Beoremote Halo on port 8080 and listen for event
-    ```json
-    $ python connect_and_listen.py connect_and_listen.py BeoremoteHalo-XXXXXXXX.local
-    Halo -> client: {"event":{"type":"system","state":"active"}}
-    Halo -> client: {"event":{"type":"power","capacity":100,"state":"discharging"}}
-    Halo -> client: {"event":{"type":"power","capacity":100,"state":"discharging"}}
+   ```
+   python connect_and_listen.py connect_and_listen.py BeoremoteHalo-XXXXXXXX.local
+   Halo -> client: {"event":{"type":"system","state":"active"}}
+   Halo -> client: {"event":{"type":"power","capacity":100,"state":"discharging"}}
+   Halo -> client: {"event":{"type":"power","capacity":100,"state":"discharging"}}
    ...
    ```
 2. Connect and
@@ -18,7 +18,7 @@ This directory contains three examples
 
    Creates a websocket client to Beoremote Halo on port 8080 and sends
    an [example configuration](https://github.com/bang-olufsen/beoremote-halo/blob/main/examples/beoremotehalo.py#L292)
-    ```json
+    ```
     $ python connect_and_configure.py BeoremoteHalo-XXXXXXXX.local
     Client -> Halo: {"configuration": {"version": "1.0.1", ...}}
     Halo -> client: {"event":{"type":"system","state":"active"}}
@@ -40,7 +40,7 @@ This directory contains three examples
 
    `on_button_event` Changed the active/inactive state of a button, will start/pause/resume the timer if the "Oven Timer" button is pressed.
 
-   ```json
+   ```
    $ python connect_and_interact.py BeoremoteHalo-XXXXXXXX.local
    Client -> Halo: {"configuration": {"version": "1.0.1", ...}}
    Halo -> client: {"event":{"type":"system","state":"active"}}
