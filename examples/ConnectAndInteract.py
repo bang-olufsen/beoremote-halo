@@ -33,15 +33,11 @@ threads = []
 
 
 def oventimer_function(ws, id, countdown):
-    print("oventimer_function {} {} {}".format(ws, id, countdown))
     minutes, seconds = countdown.split(":")
-    print("minutes {}".format(minutes))
-    print("seconds {}".format(seconds))
-
     for m in range(int(minutes), -1, -1):
-        for i in range(int(seconds), -1, -1):
-            update = BeoRemoteHaloUpdateButton(id,
-                                               content=BeoRemoteHaloConfig.ContentText("{:02d}:{:02d}".format(m, i)))
+        for s in range(int(seconds), -1, -1):
+            content = BeoRemoteHaloConfig.ContentText("{:02d}:{:02d}".format(m, s))
+            update = BeoRemoteHaloUpdateButton(id, content=content)
             ws.send(update.to_json())
             time.sleep(1)
         seconds = 59

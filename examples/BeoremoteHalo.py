@@ -9,9 +9,10 @@ import websocket
 def remove_nones(d):
     return {k: v for k, v in d.__dict__.items() if v is not None}
 
-"""https://gist.github.com/nlohmann/c899442d8126917946580e7f84bf7ee7"""
+
 def remove_empty_elements(d):
     """recursively remove empty lists, empty dicts, or None elements from a dictionary"""
+    """https://gist.github.com/nlohmann/c899442d8126917946580e7f84bf7ee7"""
 
     def empty(x):
         return x is None or x == {} or x == []
@@ -147,20 +148,20 @@ class BeoRemoteHalo:
 
 class BeoremoteHaloExmaple(BeoRemoteHaloConfig):
     def __init__(self):
-        kitchenLight = BeoRemoteHaloConfig.Button("Kitchen Light", BeoRemoteHaloConfig.ContentIcon("lights"))
-        kitchenLight.set_value(95)
-        kitchenLight.set_state(True)
-        kitchenLight.set_subtitle("On")
+        kitchen_light = BeoRemoteHaloConfig.Button("Kitchen Light", BeoRemoteHaloConfig.ContentIcon("lights"))
+        kitchen_light.set_value(95)
+        kitchen_light.set_state(True)
+        kitchen_light.set_subtitle("On")
 
-        ovenTimer = BeoRemoteHaloConfig.Button("Oven Timer", BeoRemoteHaloConfig.ContentText("09:35"))
-        ovenTimer.set_subtitle("Temperature 200°C")
-        ovenTimer.set_default(True)
-        ovenTimer.set_value(0)
+        oven_timer = BeoRemoteHaloConfig.Button("Oven Timer", BeoRemoteHaloConfig.ContentText("01:35"))
+        oven_timer.set_subtitle("Temperature 200°C")
+        oven_timer.set_default(True)
+        oven_timer.set_value(0)
 
-        diningTable = BeoRemoteHaloConfig.Button("Dining Table", BeoRemoteHaloConfig.ContentIcon("lights"))
-        diningTable.set_value(80)
-        diningTable.set_state(False)
-        diningTable.set_subtitle("Off")
+        dining_table = BeoRemoteHaloConfig.Button("Dining Table", BeoRemoteHaloConfig.ContentIcon("lights"))
+        dining_table.set_value(80)
+        dining_table.set_state(False)
+        dining_table.set_subtitle("Off")
 
         fireplace = BeoRemoteHaloConfig.Button("Fire Place", BeoRemoteHaloConfig.ContentIcon("fireplace"))
         fireplace.set_subtitle("Ignite")
@@ -171,18 +172,18 @@ class BeoremoteHaloExmaple(BeoRemoteHaloConfig):
         blinds.set_value(100)
         blinds.set_state(True)
 
-        tvBackLight = BeoRemoteHaloConfig.Button("TV Backlight", BeoRemoteHaloConfig.ContentIcon("rgb_lights"))
-        tvBackLight.set_subtitle("Off")
-        tvBackLight.set_value(0)
-        tvBackLight.set_state(False)
+        tv_back_light = BeoRemoteHaloConfig.Button("TV Backlight", BeoRemoteHaloConfig.ContentIcon("rgb_lights"))
+        tv_back_light.set_subtitle("Off")
+        tv_back_light.set_value(0)
+        tv_back_light.set_state(False)
 
-        livingRoomThermostat = BeoRemoteHaloConfig.Button("Thermostat", BeoRemoteHaloConfig.ContentText("21°C"))
-        livingRoomThermostat.set_subtitle("Heating")
-        livingRoomThermostat.set_value(55)
-        livingRoomThermostat.set_default(True)
-        livingRoomThermostat.set_state(False)
+        living_room_thermostat = BeoRemoteHaloConfig.Button("Thermostat", BeoRemoteHaloConfig.ContentText("21°C"))
+        living_room_thermostat.set_subtitle("Heating")
+        living_room_thermostat.set_value(55)
+        living_room_thermostat.set_default(True)
+        living_room_thermostat.set_state(False)
 
-        kitchen = BeoRemoteHaloConfig.Page("Kitchen", [kitchenLight, ovenTimer, diningTable])
-        livingRoom = BeoRemoteHaloConfig.Page("Kitchen", [fireplace, blinds, tvBackLight, livingRoomThermostat])
+        kitchen = BeoRemoteHaloConfig.Page("Kitchen", [kitchen_light, oven_timer, dining_table])
+        living_room = BeoRemoteHaloConfig.Page("Kitchen", [fireplace, blinds, tv_back_light, living_room_thermostat])
 
-        BeoRemoteHaloConfig.__init__(self, [kitchen, livingRoom])
+        BeoRemoteHaloConfig.__init__(self, [kitchen, living_room])
