@@ -28,4 +28,5 @@ jobs:
           pylint -j0 --disable=C0209,C0116,C0115 `find|grep .py$|xargs`
       - name: unitest + coveragecoverage
         run: |
-          coverage run --source=. -m pytest
+          coverage run --source=./examples,./test -m pytest
+          coverage report
