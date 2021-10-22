@@ -221,8 +221,9 @@ class BeoRemoteHalo:  # pylint: disable=too-many-instance-attributes
         self.on_system_event = on_system_event
         self.on_button_event = on_button_event
         self.on_wheel_event = on_wheel_event
-        self.events = [self.on_status_event, on_power_event, on_system_event, on_button_event,
-                       on_wheel_event]
+        self.events = any(
+            [self.on_status_event, self.on_power_event, self.on_system_event, self.on_button_event,
+             self.on_wheel_event])
 
     def set_verbosity(self, verbose):
         """
@@ -241,7 +242,7 @@ class BeoRemoteHalo:  # pylint: disable=too-many-instance-attributes
         if self.verbose:
             print("Halo -> client: {}".format(message))
 
-        if any(self.events):
+        if self.events:
             event = json.loads(message, object_hook=lambda d: SimpleNamespace(**d)).event
             {
                 'status': lambda msg: self.on_status_event(self, msg),
