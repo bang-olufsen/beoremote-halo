@@ -5,7 +5,7 @@
 
 
 ## Welcome
-Welcome to the public github page for the Bang & Olufsen Beoremote Halo.
+Welcome to the public GitHub page for the Bang & Olufsen Beoremote Halo.
 Beoremote Halo gives you all the convenience of a simple user interface to operate your Bang & Olufsen music system. When you get close to Beoremote Halo, the display lights up and offers you a one button press to select your music. There is no need to use your mobile device or to pull anything out of your pocket and fiddle around trying to find the right app to get started. With the Home Automation System API your remote can also be extended to control your Home. 
 <br />
 <br />
@@ -16,15 +16,15 @@ You can find out more about Beoremote Halo on the Bang & Olufsen retail website 
 
 ## Beoremote Halo Home Automation System API
 The Home Automation System API is an open source Async API that allows you to interact with a Beoremote Halo from a control system.
-Using a websocket to communicate with the Beoremote Halo, it is possible to create a configuration of buttons on the Beoremote Halo to work with your Home automation to control all your Home Automation systems with an easily accessible and wellcrafted remote.
-The API works with both the wall mounted and the table versions of the Beoremote Halo. 
-Beoremote Halo supports adding buttons with icons for most general Home automation applications and also has the option to create buttons with text. 
+Using a websocket to communicate with the Beoremote Halo, it is possible to create a configuration of buttons on the Beoremote Halo to work with your Home automation to control all your Home Automation systems with an easily accessible and well crafted remote.
+The API works with both the wall mounted and table versions of the Beoremote Halo. 
+Beoremote Halo supports adding buttons with icons or text for most general Home automation applications. 
 <img src="https://github.com/bang-olufsen/beoremote-halo/blob/main/Docs/Images/Halo%20flow%200.png" width=100% height=100% align="center">
 <br />
 ### Connecting to Beoremote Halo
-Connection to Beoremote Halo is done using a websocket client connecting to Halos Websocket server using Beoremote Halos IP adress on Port:8080. 
-Once connection is established a configuration must be sent to the remote for it to configure the screens and buttons. 
-The Beoremote Halo will answer back with acknowledgements if the configuration was successful or not. 
+Connection to Beoremote Halo is done using a websocket client connecting to Beoremote Halos Websocket server using Beoremote Halos IP address on Port:8080. 
+Once connection is established a configuration must be sent to Beoremote Halo for it to configure the screens and buttons. 
+The Beoremote Halo will answer back if the configuration was successful or not. 
 <br />
 
 <img src="https://github.com/bang-olufsen/beoremote-halo/blob/main/Docs/Images/HALO%20Flow1.png" width=100% height=100% align="center">
@@ -48,7 +48,7 @@ To get you started you can find a demo implementation created in Python in our e
 
 
 #### Prerequisites
-These examples have been tested using python3.9 and requires the following packages to run
+These examples have been tested using python 3.9 and requires the following packages to run
 ```commandline
 $ pip3 install websocket-client zeroconf
 ```
