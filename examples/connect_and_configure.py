@@ -23,8 +23,8 @@ SOFTWARE.
 """
 
 import sys
-from beoremotehalo import BeoRemoteHalo
-from beoremotehalo import BeoremoteHaloExmaple
+
+from beoremotehalo import BeoRemoteHalo, BeoremoteHaloExmaple
 
 if __name__ == "__main__":
     if len(sys.argv) == 1:

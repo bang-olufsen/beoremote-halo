@@ -26,10 +26,12 @@ import sys
 import time
 from multiprocessing import Process, Semaphore
 
-from beoremotehalo import BeoRemoteHalo
-from beoremotehalo import BeoRemoteHaloConfig
-from beoremotehalo import BeoRemoteHaloUpdateButton
-from beoremotehalo import BeoremoteHaloExmaple
+from beoremotehalo import (
+    BeoRemoteHalo,
+    BeoRemoteHaloConfig,
+    BeoremoteHaloExmaple,
+    BeoRemoteHaloUpdateButton,
+)
 
 config = BeoremoteHaloExmaple()
 semaphore = Semaphore(1)
@@ -83,7 +85,9 @@ def oven_timer_function(beoremote_halo, button_id, content):
             for second in range(int(seconds), -1, -1):
                 semaphore.acquire()
                 semaphore.release()
-                content = BeoRemoteHaloConfig.ContentText("{:02d}:{:02d}".format(minute, second))
+                content = BeoRemoteHaloConfig.ContentText(
+                    "{:02d}:{:02d}".format(minute, second)
+                )
                 update = BeoRemoteHaloUpdateButton(button_id, content=content)
                 beoremote_halo.send(update)
                 time.sleep(1)
@@ -113,8 +117,10 @@ def on_button_event(beoremote_halo, event):
                     semaphore.release()
                     oven_timer["running"] = not oven_timer["running"]
                 else:
-                    proc = Process(target=oven_timer_function,
-                                   args=(beoremote_halo, event.id, button.content))
+                    proc = Process(
+                        target=oven_timer_function,
+                        args=(beoremote_halo, event.id, button.content),
+                    )
                     oven_timer["running"] = True
                     processes.append(proc)
                     proc.start()
@@ -128,11 +134,13 @@ if __name__ == "__main__":
     if len(sys.argv) >= 2:
         ipaddress = sys.argv[1]
 
-        remote = BeoRemoteHalo(ipaddress,
-                               config,
-                               on_system_event=on_system_event,
-                               on_wheel_event=on_wheel_event,
-                               on_button_event=on_button_event)
+        remote = BeoRemoteHalo(
+            ipaddress,
+            config,
+            on_system_event=on_system_event,
+            on_wheel_event=on_wheel_event,
+            on_button_event=on_button_event,
+        )
 
         remote.connect()
         for process in processes:

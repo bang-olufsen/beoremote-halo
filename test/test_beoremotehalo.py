@@ -29,18 +29,21 @@ from unittest.mock import MagicMock, patch
 MockWebsocket = MagicMock()
 modules = {
     "websocket": MockWebsocket,
-    "websocket.WebSocketApp": MockWebsocket.WebSocketApp
+    "websocket.WebSocketApp": MockWebsocket.WebSocketApp,
 }
 
 patcher = patch.dict("sys.modules")
 patcher.start()
 # pylint: disable=wrong-import-position
-from examples.beoremotehalo import BeoRemoteHalo, BeoRemoteHaloUpdateButton, BeoremoteHaloExmaple, \
-    BeoRemoteHaloConfig
+from examples.beoremotehalo import (
+    BeoRemoteHalo,
+    BeoRemoteHaloConfig,
+    BeoremoteHaloExmaple,
+    BeoRemoteHaloUpdateButton,
+)
 
 
 class MyTestCase(unittest.TestCase):
-
     @patch("websocket.WebSocketApp.run_forever")
     def test_connect(self, run_forever):
         remote = BeoRemoteHalo("192.168.1.127")
@@ -51,26 +54,32 @@ class MyTestCase(unittest.TestCase):
     def test_beoremote_halo_exmaple(self):
         config = BeoremoteHaloExmaple()
 
-        self.assertEqual(len(config.configuration['pages']), 2)
-        self.assertEqual(config.configuration['version'], "1.0.1")
-        self.assertRegex(config.configuration['id'],
-                         R"\b[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}\b")
-        self.assertEqual(config.configuration['pages'][0].title, "Kitchen")
-        self.assertRegex(config.configuration['pages'][0].id,
-                         R"\b[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}\b")
-        self.assertEqual(len(config.configuration['pages'][0].buttons), 3)
-        self.assertEqual(config.configuration['pages'][0].buttons[0].state, "active")
+        self.assertEqual(len(config.configuration["pages"]), 2)
+        self.assertEqual(config.configuration["version"], "1.0.1")
+        self.assertRegex(
+            config.configuration["id"],
+            R"\b[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}\b",
+        )
+        self.assertEqual(config.configuration["pages"][0].title, "Kitchen")
+        self.assertRegex(
+            config.configuration["pages"][0].id,
+            R"\b[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}\b",
+        )
+        self.assertEqual(len(config.configuration["pages"][0].buttons), 3)
+        self.assertEqual(config.configuration["pages"][0].buttons[0].state, "active")
 
-        config.configuration['pages'][0].buttons[0].toggle_state()
-        self.assertEqual(config.configuration['pages'][0].buttons[0].state, "inactive")
-        config.configuration['pages'][0].buttons[0].toggle_state()
-        self.assertEqual(config.configuration['pages'][0].buttons[0].state, "active")
+        config.configuration["pages"][0].buttons[0].toggle_state()
+        self.assertEqual(config.configuration["pages"][0].buttons[0].state, "inactive")
+        config.configuration["pages"][0].buttons[0].toggle_state()
+        self.assertEqual(config.configuration["pages"][0].buttons[0].state, "active")
 
     def test_beoremote_halo_update_button(self):
         button = BeoRemoteHaloUpdateButton(str(uuid.uuid1()))
-        self.assertRegex(button.to_json(),
-                         R"\{\"update\"\:\s\{\"type\"\:\s\"button\",\s\"id\"\:\s\"\b[0-9a-f]{"
-                         R"8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}\b\"\}\}")
+        self.assertRegex(
+            button.to_json(),
+            R"\{\"update\"\:\s\{\"type\"\:\s\"button\",\s\"id\"\:\s\"\b[0-9a-f]{"
+            R"8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}\b\"\}\}",
+        )
 
     def test_verbose(self):
         remote = BeoRemoteHalo("192.168.1.127")
@@ -109,14 +118,18 @@ class MyTestCase(unittest.TestCase):
         on_button_event = MagicMock()
         on_wheel_event = MagicMock()
 
-        remote = BeoRemoteHalo("192.168.1.127",
-                               on_status_event=on_status_event,
-                               on_system_event=on_system_event,
-                               on_power_event=on_power_event,
-                               on_button_event=on_button_event,
-                               on_wheel_event=on_wheel_event)
+        remote = BeoRemoteHalo(
+            "192.168.1.127",
+            on_status_event=on_status_event,
+            on_system_event=on_system_event,
+            on_power_event=on_power_event,
+            on_button_event=on_button_event,
+            on_wheel_event=on_wheel_event,
+        )
 
-        remote.on_message(None, r'{"event": {"type": "status","state": "ok","message": "string"}}')
+        remote.on_message(
+            None, r'{"event": {"type": "status","state": "ok","message": "string"}}'
+        )
         on_status_event.assert_called_once()
         self.assertEqual(1, on_status_event.call_count)
 
