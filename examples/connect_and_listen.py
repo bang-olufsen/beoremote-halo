@@ -23,6 +23,7 @@ SOFTWARE.
 """
 
 import sys
+
 from beoremotehalo import BeoRemoteHalo
 
 if __name__ == "__main__":
