@@ -35,7 +35,7 @@ modules = {
 patcher = patch.dict("sys.modules")
 patcher.start()
 # pylint: disable=wrong-import-position
-from examples.beoremotehalo import (
+from src.beoremote.beoremotehalo import (
     BeoRemoteHalo,
     BeoRemoteHaloConfig,
     BeoremoteHaloExmaple,
