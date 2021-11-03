@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
 
-from beoremote import beoremoteCli
+from beoremote import beoremote_cli
 
-beoremoteCli.cli()
+beoremote_cli.cli()

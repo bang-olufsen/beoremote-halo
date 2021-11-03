@@ -78,7 +78,7 @@ def discover():
             "up while discovering in running.\r\nPress enter to exit...\n\n"
         )
     except KeyboardInterrupt:
-        pass
+        browser.cancel()
     finally:
         zeroconf.close()
     sys.exit()

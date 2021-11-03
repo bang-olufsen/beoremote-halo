@@ -26,7 +26,7 @@ jobs:
           pip install pylint websocket-client zeroconf coverage pytest
       - name: Analysing the code with pylint
         run: |
-          pylint -j0 --disable=C0209,C0116,C0115 `find|grep .py$|xargs`
+          pylint -j0 --disable=C0209,C0116,C0115,E0401 `find {src,test}|grep .py$|xargs`
       - name: unitest + coveragecoverage
         run: |
           coverage run --source=./examples,./test -m pytest
