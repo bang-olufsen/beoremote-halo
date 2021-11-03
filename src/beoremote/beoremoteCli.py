@@ -1,4 +1,5 @@
 import click
+from beoremotehalo import BeoRemoteHalo
 
 from beoremote import discover
 
@@ -17,12 +18,13 @@ def demo(hostname):
     pass
 
 
-# @cli.command()
-# @click.option('--count', default=1)
-# @click.pass_context
-# def dist(ctx, count):
-#     ctx.forward(test)
-#     ctx.invoke(test, count=42)
+@cli.command(help="Connect to Halo and listen for events")
+@click.option("--hostname", required=True)
+def listen(hostname):
+    remote = BeoRemoteHalo(hostname)
+    remote.connect()
+    pass
+
 
 if __name__ == "__main__":
     cli()
