@@ -22,20 +22,30 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-import sys
+import click
 
-from beoremotehalo import BeoRemoteHalo, BeoremoteHaloExmaple
+from beoremote import backend_demo, beoremotehalo, discover
+
+cli = click.Group()
+
+
+@cli.command(help="Scan network for active Beoremote Halo.")
+def scan():
+    discover.discover()
+
+
+@cli.command(help="Interactive Home Automation Demo")
+@click.option("--hostname", required=True)
+def demo(hostname):
+    backend_demo.backend(hostname)
+
+
+@cli.command(help="Connect to Halo and listen for events")
+@click.option("--hostname", required=True)
+def listen(hostname):
+    remote = beoremotehalo.BeoRemoteHalo(hostname)
+    remote.connect()
+
 
 if __name__ == "__main__":
-    if len(sys.argv) == 1:
-        print("usage: ConnectAndConfigure.py address")
-        sys.exit(1)
-
-    if len(sys.argv) >= 2:
-        ipaddress = sys.argv[1]
-
-        config = BeoremoteHaloExmaple()
-        remote = BeoRemoteHalo(ipaddress, config)
-
-        remote.connect()
-    sys.exit()
+    cli()

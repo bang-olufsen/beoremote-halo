@@ -67,7 +67,7 @@ class BeoremoteHaloListener:
         del zero_conf, conf_type, name  # unused
 
 
-if __name__ == "__main__":
+def discover():
     zeroconf = Zeroconf()
     listener = BeoremoteHaloListener()
     browser = ServiceBrowser(zeroconf, "_zenith._tcp.local.", listener)
@@ -78,7 +78,11 @@ if __name__ == "__main__":
             "up while discovering in running.\r\nPress enter to exit...\n\n"
         )
     except KeyboardInterrupt:
-        pass
+        browser.cancel()
     finally:
         zeroconf.close()
     sys.exit()
+
+
+if __name__ == "__main__":
+    discover()

@@ -26,7 +26,7 @@ import sys
 import time
 from multiprocessing import Process, Semaphore
 
-from beoremotehalo import (
+from beoremote.beoremotehalo import (
     BeoRemoteHalo,
     BeoRemoteHaloConfig,
     BeoremoteHaloExmaple,
@@ -126,24 +126,17 @@ def on_button_event(beoremote_halo, event):
                     proc.start()
 
 
-if __name__ == "__main__":
-    if len(sys.argv) == 1:
-        print("usage: ConnectAndInteract.py address")
-        sys.exit(1)
+def backend(hostname):
+    remote = BeoRemoteHalo(
+        hostname,
+        config,
+        on_system_event=on_system_event,
+        on_wheel_event=on_wheel_event,
+        on_button_event=on_button_event,
+    )
 
-    if len(sys.argv) >= 2:
-        ipaddress = sys.argv[1]
-
-        remote = BeoRemoteHalo(
-            ipaddress,
-            config,
-            on_system_event=on_system_event,
-            on_wheel_event=on_wheel_event,
-            on_button_event=on_button_event,
-        )
-
-        remote.connect()
-        for process in processes:
-            process.terminate()
+    remote.connect()
+    for process in processes:
+        process.terminate()
 
     sys.exit()
