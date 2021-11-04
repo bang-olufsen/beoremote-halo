@@ -19,3 +19,11 @@ repos:
     hooks:
       - id: isort
         args: [--profile=black]
+
+#-   repo: https://github.com/pycqa/pylint
+#    rev: v2.11.1
+#    hooks:
+#      -   id: pylint
+#          args:
+#            - -j0
+#            - --disable=C0209,C0116,C0115,E0401

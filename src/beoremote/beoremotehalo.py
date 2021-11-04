@@ -22,199 +22,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-import json
 import time
 import uuid
-from types import SimpleNamespace
 
 import websocket
-
-
-def remove_nones(dictionary):
-    """
-
-    :param dictionary:
-    :return:
-    """
-    return {k: v for k, v in dictionary.__dict__.items() if v is not None}
-
-
-def remove_empty_elements(dictionary):
-    """
-    recursively remove empty lists, empty dicts, or None elements from a dictionary
-    https://gist.github.com/nlohmann/c899442d8126917946580e7f84bf7ee7
-
-    :param dictionary
-    """
-
-    def empty(check_object):
-        """
-
-        :param check_object:
-        :return:
-        """
-        return check_object is None or check_object == {} or check_object == []
-
-    if not isinstance(dictionary, (dict, list)):  # pylint: disable=no-else-return
-        return dictionary
-    elif isinstance(dictionary, list):
-        return [
-            v for v in (remove_empty_elements(v) for v in dictionary) if not empty(v)
-        ]
-    else:
-        return {
-            k: v
-            for k, v in ((k, remove_empty_elements(v)) for k, v in dictionary.items())
-            if not empty(v)
-        }
-
-
-class BeoRemoteHaloConfig:
-    """
-    Configuration object for Beoremote Halo tied to spec available at
-    https://bang-olufsen.github.io/beoremote-halo/
-    """
-
-    version = "1.0.1"
-
-    def __init__(self, pages):
-        if not isinstance(pages, list):
-            pages = [pages]
-        self.configuration = {
-            "version": BeoRemoteHaloConfig.version,
-            "id": str(uuid.uuid1()),
-            "pages": pages,
-        }
-
-    def to_json(self, indent=None) -> str:
-        """
-
-        :param indent:
-        :return:
-        """
-        return json.dumps(
-            self,
-            default=lambda o: remove_empty_elements(remove_nones(o)),
-            indent=indent,
-        )
-
-    def __getitem__(self, item):
-        for page in self.configuration["pages"]:
-            for button in page.buttons:
-                if button.id == item:
-                    return button
-        return None
-
-    class Page:  # pylint: disable=too-few-public-methods
-        """
-        Page object
-        """
-
-        def __init__(self, title: str, buttons=None):
-            self.title = title
-            self.id = str(uuid.uuid1())  # pylint: disable=invalid-name
-            if not isinstance(buttons, list):
-                buttons = [buttons]
-            self.buttons = buttons
-
-    class Button:
-        """
-        Button object
-        """
-
-        # pylint: disable=too-many-arguments
-        def __init__(
-            self, title, content, subtitle=None, value=None, state=None, default=None
-        ):
-            self.id = str(uuid.uuid1())  # pylint: disable=invalid-name
-            self.title = title
-            self.subtitle = subtitle
-            self.value = value
-            self.state = state
-            self.content = content
-            self.default = default
-
-        def set_subtitle(self, subtitle: str):
-            """
-
-            :param subtitle:
-            """
-            self.subtitle = subtitle
-
-        def set_value(self, value: int):
-            """
-
-            :param value:
-            """
-            self.value = value
-
-        def set_state(self, state: bool):
-            """
-
-            :param state:
-            """
-            self.state = "active" if state else "inactive"
-
-        def toggle_state(self):
-            """
-            Toggle button active/inactive state
-            """
-            if self.state == "active":
-                self.state = "inactive"
-            else:
-                self.state = "active"
-
-        def set_default(self, default=bool()):
-            """
-
-            :param default:
-            """
-            self.default = default
-
-    class ContentIcon:  # pylint: disable=too-few-public-methods
-        """
-        Button Content for icons
-        """
-
-        def __init__(self, icon):
-            self.icon = icon
-
-    class ContentText:  # pylint: disable=too-few-public-methods
-        """
-        Button Content for text
-        """
-
-        def __init__(self, text):
-            self.text = text
-
-
-class BeoRemoteHaloUpdateButton:  # pylint: disable=too-few-public-methods
-    """
-    Update object for Buttons
-    """
-
-    # pylint: disable=too-many-arguments
-    def __init__(
-        self, button_id, content=None, title=None, subtitle=None, value=None, state=None
-    ):
-        self.update = {
-            "type": "button",
-            "id": button_id,
-            "content": content,
-            "title": title,
-            "subtitle": subtitle,
-            "value": value,
-            "state": state,
-        }
-
-    def to_json(self):
-        """
-
-        :return:
-        """
-        return json.dumps(
-            self, default=lambda o: remove_empty_elements(remove_nones(o))
-        )
+from configuration import Configuration
+from event import Event
+from icons import Icons
+from text import Text
 
 
 class BeoRemoteHalo:  # pylint: disable=too-many-instance-attributes
@@ -282,9 +97,7 @@ class BeoRemoteHalo:  # pylint: disable=too-many-instance-attributes
             print("Halo -> client: {}".format(message))
 
         if self.events:
-            event = json.loads(
-                message, object_hook=lambda d: SimpleNamespace(**d)
-            ).event
+            event = Event.from_json(message).event
             {
                 "status": lambda msg: self.on_status_event(self, msg),
                 "power": lambda msg: self.on_power_event(self, msg),
@@ -331,68 +144,87 @@ class BeoRemoteHalo:  # pylint: disable=too-many-instance-attributes
         self.websocket.run_forever()
 
 
-class BeoremoteHaloExmaple(
-    BeoRemoteHaloConfig
-):  # pylint: disable=too-few-public-methods
+class BeoremoteHaloExmaple(Configuration):  # pylint: disable=too-few-public-methods
     """
     Example configuration for Beoremote Halo
     """
 
     def __init__(self):
-        kitchen_light = BeoRemoteHaloConfig.Button(
-            "Kitchen Light", BeoRemoteHaloConfig.ContentIcon("lights")
-        )
-        kitchen_light.set_value(95)
-        kitchen_light.set_state(True)
-        kitchen_light.set_subtitle("On")
-
-        oven_timer = BeoRemoteHaloConfig.Button(
-            "Oven Timer", BeoRemoteHaloConfig.ContentText("01:35")
-        )
-        oven_timer.set_subtitle("Temperature 200°C")
-        oven_timer.set_default(True)
-        oven_timer.set_value(0)
-
-        dining_table = BeoRemoteHaloConfig.Button(
-            "Dining Table", BeoRemoteHaloConfig.ContentIcon("lights")
-        )
-        dining_table.set_value(80)
-        dining_table.set_state(False)
-        dining_table.set_subtitle("Off")
-
-        fireplace = BeoRemoteHaloConfig.Button(
-            "Fire Place", BeoRemoteHaloConfig.ContentIcon("fireplace")
-        )
-        fireplace.set_subtitle("Ignite")
-        fireplace.set_state(False)
-
-        blinds = BeoRemoteHaloConfig.Button(
-            "Blinds", BeoRemoteHaloConfig.ContentIcon("blinds")
-        )
-        blinds.set_subtitle("Closed")
-        blinds.set_value(100)
-        blinds.set_state(True)
-
-        tv_back_light = BeoRemoteHaloConfig.Button(
-            "TV Backlight", BeoRemoteHaloConfig.ContentIcon("rgb_lights")
-        )
-        tv_back_light.set_subtitle("Off")
-        tv_back_light.set_value(0)
-        tv_back_light.set_state(False)
-
-        living_room_thermostat = BeoRemoteHaloConfig.Button(
-            "Thermostat", BeoRemoteHaloConfig.ContentText("21°C")
-        )
-        living_room_thermostat.set_subtitle("Heating")
-        living_room_thermostat.set_value(55)
-        living_room_thermostat.set_default(True)
-        living_room_thermostat.set_state(False)
-
-        kitchen = BeoRemoteHaloConfig.Page(
-            "Kitchen", [kitchen_light, oven_timer, dining_table]
-        )
-        living_room = BeoRemoteHaloConfig.Page(
-            "Kitchen", [fireplace, blinds, tv_back_light, living_room_thermostat]
+        kitchen_light = Configuration.Configuration.Pages.Buttons(
+            str(uuid.uuid1()),
+            "Kitchen Light",
+            "On",
+            95,
+            Configuration.Configuration.Pages.Buttons.State.active,
+            Icons(Icons.Icon.lights),
         )
 
-        BeoRemoteHaloConfig.__init__(self, [kitchen, living_room])
+        oven_timer = Configuration.Configuration.Pages.Buttons(
+            str(uuid.uuid1()),
+            "Oven Timer",
+            "Temperature 200°C",
+            0,
+            Configuration.Configuration.Pages.Buttons.State.inactive,
+            Text("01:35"),
+            True,
+        )
+
+        dining_table = Configuration.Configuration.Pages.Buttons(
+            str(uuid.uuid1()),
+            "Dining Table",
+            "Off",
+            80,
+            Configuration.Configuration.Pages.Buttons.State.inactive,
+            Icons(Icons.Icon.lights),
+        )
+
+        fireplace = Configuration.Configuration.Pages.Buttons(
+            str(uuid.uuid1()),
+            "Fire Place",
+            "Ignite",
+            None,
+            Configuration.Configuration.Pages.Buttons.State.inactive,
+            Icons(Icons.Icon.fireplace),
+        )
+
+        blinds = Configuration.Configuration.Pages.Buttons(
+            str(uuid.uuid1()),
+            "Blinds",
+            "Closed",
+            100,
+            Configuration.Configuration.Pages.Buttons.State.active,
+            Icons(Icons.Icon.blinds),
+        )
+
+        tv_back_light = Configuration.Configuration.Pages.Buttons(
+            str(uuid.uuid1()),
+            "TV Backlight",
+            "off",
+            0,
+            Configuration.Configuration.Pages.Buttons.State.inactive,
+            Icons(Icons.Icon.rgb_lights),
+        )
+
+        living_room_thermostat = Configuration.Configuration.Pages.Buttons(
+            str(uuid.uuid1()),
+            "Thermostat",
+            "Heating",
+            55,
+            Configuration.Configuration.Pages.Buttons.State.inactive,
+            Text("21°C"),
+            True,
+        )
+
+        kitchen = Configuration.Configuration.Pages(
+            "Kitchen", str(uuid.uuid1()), [kitchen_light, oven_timer, dining_table]
+        )
+
+        living_room = Configuration.Configuration.Pages(
+            "living room",
+            str(uuid.uuid1()),
+            [fireplace, blinds, tv_back_light, living_room_thermostat],
+        )
+
+        Configuration.__init__(
+            self, Configuration.Configuration(str(uuid.uuid1()), [kitchen, living_room])
+        )

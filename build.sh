@@ -10,11 +10,15 @@ case $1 in
     cp output/index.html index.html
     ;;
 
-  --pip-package)
+  --pip)
     python3 -m build
     ;;
 
+  --lint)
+    pylint -j0 --disable=C0209,C0116,C0115,E0401 `find {src,test}|grep .py$|xargs`
+    ;;
+
   --test)
-    coverage run --source=./src,./test -m pytest && coverage report
+    export PYTHONPATH=$PYTHONPATH:src/beoremote; coverage run --source=./src,./test -m pytest && coverage report && coverage html -d coverage_html
     ;;
 esac
