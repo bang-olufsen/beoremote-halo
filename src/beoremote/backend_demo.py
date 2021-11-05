@@ -26,12 +26,12 @@ import sys
 import time
 from multiprocessing import Process, Semaphore
 
-from beoremotehalo import BeoRemoteHalo, BeoremoteHaloExmaple
-from buttonEvent import ButtonEvent
-from text import Text
-from update import Update
-from updateButton import UpdateButton
-from wheelEvent import WheelEvent
+from beoremote.beoremotehalo import BeoRemoteHalo, BeoremoteHaloExmaple
+from beoremote.buttonEvent import ButtonEvent
+from beoremote.text import Text
+from beoremote.update import Update
+from beoremote.updateButton import UpdateButton
+from beoremote.wheelEvent import WheelEvent
 
 config = BeoremoteHaloExmaple()
 semaphore = Semaphore(1)

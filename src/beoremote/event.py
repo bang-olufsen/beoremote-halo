@@ -22,12 +22,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-from buttonEvent import ButtonEvent
-from entity import Entity
-from powerEvent import PowerEvent
-from statusEvent import StatusEvent
-from systemEvent import SystemEvent
-from wheelEvent import WheelEvent
+from beoremote.buttonEvent import ButtonEvent
+from beoremote.entity import Entity
+from beoremote.powerEvent import PowerEvent
+from beoremote.statusEvent import StatusEvent
+from beoremote.systemEvent import SystemEvent
+from beoremote.wheelEvent import WheelEvent
 
 
 class Event(Entity):

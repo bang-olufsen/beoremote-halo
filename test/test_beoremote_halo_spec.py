@@ -24,14 +24,14 @@ SOFTWARE.
 
 import unittest
 
-from src.beoremote.configuration import Configuration
-from src.beoremote.event import Event
-from src.beoremote.icons import Icons
-from src.beoremote.text import Text
-from src.beoremote.update import Update
-from src.beoremote.updateButton import UpdateButton
-from src.beoremote.updateDisplayPage import UpdateDisplayPage
-from src.beoremote.updateNotification import UpdateNotification
+from beoremote.configuration import Configuration
+from beoremote.event import Event
+from beoremote.icons import Icons
+from beoremote.text import Text
+from beoremote.update import Update
+from beoremote.updateButton import UpdateButton
+from beoremote.updateDisplayPage import UpdateDisplayPage
+from beoremote.updateNotification import UpdateNotification
 
 
 class MyTestCase(unittest.TestCase):
