@@ -60,3 +60,50 @@ Halo will also send events on button press and wheel changes to the control syst
 
 
 For further details on the Open API including list of commands, examples and icons please also refer to the API description [here](https://bang-olufsen.github.io/beoremote-halo/)
+
+## beoremote-halo usage
+Listen for events from Beoremote Halo using the `beoremote-halo` tool. It will create a websocket client and connect to Beoremote Halo on port 8080 and listen for events
+```
+$ beoremote-halo listen --hostname BeoremoteHalo-XXXXXXXX.local
+Halo -> client: {"event":{"type":"system","state":"active"}}
+Halo -> client: {"event":{"type":"power","capacity":100,"state":"discharging"}}
+Halo -> client: {"event":{"type":"power","capacity":100,"state":"discharging"}}
+...
+ ```
+Interacttive demo
+Creates a websocket client to Beoremote Halo on port 8080. Configures Beoremote Halo and reaction to events received from Halo. The callbaks are located here and each handle a specific type of
+event.
+
+`on_system_event` is provided but unused in this example.
+
+`on_wheel_event` changes the indicator ring on the centered/controlled button.
+
+`on_button_event` Changed the active/inactive state of a button, will start/pause/resume the timer if the "Oven Timer" button is pressed.
+
+```
+$ beoremote-halo demo --hostname BeoremoteHalo-XXXXXXXX.local
+Client -> Halo: {"configuration": {"version": "1.0.1", ...}}
+Halo -> client: {"event":{"type":"system","state":"active"}}
+Halo -> client: {"event":{"type":"status","state":"ok","message":"Configuration"}}
+Halo -> client: {"event":{"type":"button","id":"c7f6247f-3260-11ec-bd30-51f891360684","state":"pressed"}}
+Halo -> client: {"event":{"type":"button","id":"c7f6247f-3260-11ec-bd30-51f891360684","state":"released"}}
+Client -> Halo: {"update": {"type": "button", "id": "c7f6247f-3260-11ec-bd30-51f891360684", "state": "active"}}
+Halo -> client: {"event":{"type":"status","state":"ok","message":"Update"}}
+Client -> Halo: {"update": {"type": "button", "id": "c7f6247f-3260-11ec-bd30-51f891360684", "content": {"text": "01:35"}}}
+Halo -> client: {"event":{"type":"status","state":"ok","message":"Update"}}
+...
+Client -> Halo: {"update": {"type": "button", "id": "c7f6247f-3260-11ec-bd30-51f891360684", "content": {"text": "01:22"}}}
+Halo -> client: {"event":{"type":"status","state":"ok","message":"Update"}}
+...
+```
+
+```python
+remote = BeoRemoteHalo(
+    host="BeoremoteHalo-XXXXXXXX.local",
+    configuration=config,   # Configuration object created using beoremote.configuration
+    on_system_event=on_system_event,
+    on_wheel_event=on_wheel_event,
+    on_button_event=on_button_event,
+)
+remote.connect()
+```

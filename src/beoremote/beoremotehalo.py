@@ -31,6 +31,7 @@ from beoremote.configuration import Configuration
 from beoremote.event import Event
 from beoremote.icons import Icons
 from beoremote.text import Text
+from beoremote.update import Update
 
 
 class BeoRemoteHalo:  # pylint: disable=too-many-instance-attributes
@@ -79,7 +80,7 @@ class BeoRemoteHalo:  # pylint: disable=too-many-instance-attributes
             ]
         )
 
-    def set_verbosity(self, verbose):
+    def set_verbosity(self, verbose: bool):
         """
 
         :param verbose:
@@ -106,7 +107,7 @@ class BeoRemoteHalo:  # pylint: disable=too-many-instance-attributes
                 "wheel": lambda msg: self.on_wheel_event(self, msg),
             }[event.type](event)
 
-    def send(self, update):
+    def send(self, update: Update):
         """
 
         :param update:

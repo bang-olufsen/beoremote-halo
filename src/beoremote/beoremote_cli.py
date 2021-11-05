@@ -35,6 +35,8 @@ def cli():
     \b
     Project source files are located at github:
     https://github.com/bang-olufsen/beoremote-halo
+    API documentation is located available at:
+    https://bang-olufsen.github.io/beoremote-halo/
 
     \b
     Please report bugs or issues at:
