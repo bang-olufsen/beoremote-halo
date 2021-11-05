@@ -26,10 +26,24 @@ import click
 
 from beoremote import backend_demo, beoremotehalo, discover
 
-cli = click.Group()
+
+@click.group()
+def cli():
+    """Cli provided by Bang & Olufsen a/s used to scan the network for Beoremote Halo on local
+    network
+
+    \b
+    Project source files are located at github:
+    https://github.com/bang-olufsen/beoremote-halo
+
+    \b
+    Please report bugs or issues at:
+    https://github.com/bang-olufsen/beoremote-halo/issues
+    \b
+    """
 
 
-@cli.command(help="Scan network for active Beoremote Halo.")
+@cli.command(help="Scan the network for active Beoremote Halo.")
 def scan():
     discover.discover()
 
@@ -40,7 +54,7 @@ def demo(hostname):
     backend_demo.backend(hostname)
 
 
-@cli.command(help="Connect to Halo and listen for events")
+@cli.command(help="Connect to a Halo and listen for events")
 @click.option("--hostname", required=True)
 def listen(hostname):
     remote = beoremotehalo.BeoRemoteHalo(hostname)
