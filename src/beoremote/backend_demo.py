@@ -26,12 +26,12 @@ import sys
 import time
 from multiprocessing import Process, Semaphore
 
-from beoremote.beoremotehalo import (
-    BeoRemoteHalo,
-    BeoRemoteHaloConfig,
-    BeoremoteHaloExmaple,
-    BeoRemoteHaloUpdateButton,
-)
+from beoremotehalo import BeoRemoteHalo, BeoremoteHaloExmaple
+from buttonEvent import ButtonEvent
+from text import Text
+from update import Update
+from updateButton import UpdateButton
+from wheelEvent import WheelEvent
 
 config = BeoremoteHaloExmaple()
 semaphore = Semaphore(1)
@@ -59,7 +59,7 @@ def on_system_event(beoremote_halo, event):
     del beoremote_halo, event  # unused
 
 
-def on_wheel_event(beoremote_halo, event):
+def on_wheel_event(beoremote_halo, event: WheelEvent):
     """
 
     :param beoremote_halo:
@@ -68,7 +68,16 @@ def on_wheel_event(beoremote_halo, event):
     button = config[event.id]
     if button and button.value is not None:
         button.value = clamp(button.value + event.counts * 5, 0, 100)
-        update = BeoRemoteHaloUpdateButton(event.id, value=button.value)
+        update = Update(
+            UpdateButton(
+                id=button.id,
+                value=button.value,
+                title=None,
+                subtitle=None,
+                state=None,
+                content=None,
+            )
+        )
         beoremote_halo.send(update)
 
 
@@ -85,10 +94,17 @@ def oven_timer_function(beoremote_halo, button_id, content):
             for second in range(int(seconds), -1, -1):
                 semaphore.acquire()
                 semaphore.release()
-                content = BeoRemoteHaloConfig.ContentText(
-                    "{:02d}:{:02d}".format(minute, second)
+                content = Text("{:02d}:{:02d}".format(minute, second))
+                update = Update(
+                    UpdateButton(
+                        id=button_id,
+                        value=None,
+                        title=None,
+                        subtitle=None,
+                        state=None,
+                        content=content,
+                    )
                 )
-                update = BeoRemoteHaloUpdateButton(button_id, content=content)
                 beoremote_halo.send(update)
                 time.sleep(1)
             seconds = 59
@@ -96,7 +112,7 @@ def oven_timer_function(beoremote_halo, button_id, content):
         pass
 
 
-def on_button_event(beoremote_halo, event):
+def on_button_event(beoremote_halo, event: ButtonEvent):
     """
 
     :param beoremote_halo:
@@ -105,7 +121,16 @@ def on_button_event(beoremote_halo, event):
     button = config[event.id]
     if event.state == "released":
         button.toggle_state()
-        update = BeoRemoteHaloUpdateButton(event.id, state=button.state)
+        update = Update(
+            UpdateButton(
+                id=event.id,
+                value=None,
+                title=None,
+                subtitle=None,
+                state=button.state,
+                content=None,
+            )
+        )
         beoremote_halo.send(update)
 
         if button and button.title == "Oven Timer":

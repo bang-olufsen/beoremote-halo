@@ -23,7 +23,6 @@ SOFTWARE.
 """
 
 import unittest
-import uuid
 from unittest.mock import MagicMock, patch
 
 MockWebsocket = MagicMock()
@@ -35,12 +34,10 @@ modules = {
 patcher = patch.dict("sys.modules")
 patcher.start()
 # pylint: disable=wrong-import-position
-from src.beoremote.beoremotehalo import (
-    BeoRemoteHalo,
-    BeoRemoteHaloConfig,
-    BeoremoteHaloExmaple,
-    BeoRemoteHaloUpdateButton,
-)
+from src.beoremote.beoremotehalo import BeoRemoteHalo, BeoremoteHaloExmaple
+from src.beoremote.icons import Icons
+from src.beoremote.update import Update
+from src.beoremote.updateButton import UpdateButton
 
 
 class MyTestCase(unittest.TestCase):
@@ -54,32 +51,21 @@ class MyTestCase(unittest.TestCase):
     def test_beoremote_halo_exmaple(self):
         config = BeoremoteHaloExmaple()
 
-        self.assertEqual(len(config.configuration["pages"]), 2)
-        self.assertEqual(config.configuration["version"], "1.0.1")
+        self.assertEqual(len(config.configuration.pages), 2)
+        self.assertEqual(config.configuration.version, "1.0.1")
         self.assertRegex(
-            config.configuration["id"],
+            config.configuration.id,
             R"\b[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}\b",
         )
-        self.assertEqual(config.configuration["pages"][0].title, "Kitchen")
+        self.assertEqual(config.configuration.pages[0].title, "Kitchen")
         self.assertRegex(
-            config.configuration["pages"][0].id,
+            config.configuration.pages[0].id,
             R"\b[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}\b",
         )
-        self.assertEqual(len(config.configuration["pages"][0].buttons), 3)
-        self.assertEqual(config.configuration["pages"][0].buttons[0].state, "active")
+        self.assertEqual(len(config.configuration.pages[0].buttons), 3)
+        self.assertEqual(config.configuration.pages[0].buttons[0].state, "active")
 
-        config.configuration["pages"][0].buttons[0].toggle_state()
-        self.assertEqual(config.configuration["pages"][0].buttons[0].state, "inactive")
-        config.configuration["pages"][0].buttons[0].toggle_state()
-        self.assertEqual(config.configuration["pages"][0].buttons[0].state, "active")
-
-    def test_beoremote_halo_update_button(self):
-        button = BeoRemoteHaloUpdateButton(str(uuid.uuid1()))
-        self.assertRegex(
-            button.to_json(),
-            R"\{\"update\"\:\s\{\"type\"\:\s\"button\",\s\"id\"\:\s\"\b[0-9a-f]{"
-            R"8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}\b\"\}\}",
-        )
+        self.assertEqual(config.configuration.pages[0].buttons[0].state, "active")
 
     def test_verbose(self):
         remote = BeoRemoteHalo("192.168.1.127")
@@ -90,9 +76,19 @@ class MyTestCase(unittest.TestCase):
     @patch("websocket.WebSocketApp.send")
     def test_send(self, send):
         remote = BeoRemoteHalo("192.168.1.127")
-        button = BeoRemoteHaloUpdateButton(str(uuid.uuid1()))
+        button = Update(
+            UpdateButton(
+                "497f6eca-6276-4993-bfeb-53cbbbba6f08",
+                "string",
+                "string",
+                100,
+                UpdateButton.State.active,
+                Icons(Icons.Icon.LIGHTS),
+            )
+        )
 
         remote.send(button)
+
         assert send.called
         self.assertEqual(1, send.call_count)
 
@@ -105,7 +101,7 @@ class MyTestCase(unittest.TestCase):
 
     @patch("websocket.WebSocketApp.send")
     def test_open(self, send):
-        config = BeoRemoteHaloConfig([])
+        config = BeoremoteHaloExmaple()
         remote = BeoRemoteHalo("192.168.1.127", config)
 
         remote.on_open(None)
@@ -131,7 +127,12 @@ class MyTestCase(unittest.TestCase):
             None, r'{"event": {"type": "status","state": "ok","message": "string"}}'
         )
         on_status_event.assert_called_once()
+
         self.assertEqual(1, on_status_event.call_count)
+        status_event = on_status_event.call_args.args[1]
+        self.assertEqual("status", status_event.type)
+        self.assertEqual("ok", status_event.state)
+        self.assertEqual("string", status_event.message)
 
     def test_find_button_none(self):
         config = BeoremoteHaloExmaple()
@@ -139,14 +140,14 @@ class MyTestCase(unittest.TestCase):
 
     def test_find_button(self):
         config = BeoremoteHaloExmaple()
-        button = config.configuration["pages"][0].buttons[0]
+        button = config.configuration.pages[0].buttons[0]
         self.assertEqual(button, config[button.id])
 
-    def test_create_config(self):
-        content = BeoRemoteHaloConfig.ContentText("some text")
-        button = BeoRemoteHaloConfig.Button("test button", content)
-        page = BeoRemoteHaloConfig.Page("Page title", button)
-
-        config = BeoRemoteHaloConfig(page)
-
-        self.assertEqual(1, len(config.configuration["pages"]))
+    def test_button_toggle(self):
+        config = BeoremoteHaloExmaple()
+        button = config.configuration.pages[0].buttons[0]
+        self.assertEqual("active", button.state)
+        button.toggle_state()
+        self.assertEqual("inactive", button.state)
+        button.toggle_state()
+        self.assertEqual("active", button.state)
