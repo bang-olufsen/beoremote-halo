@@ -41,6 +41,9 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: beoremote-halo
       - name: Verify package - Connect Demo
         run: |
           wget https://github.com/vi/websocat/releases/download/v1.9.0/websocat_linux32_nossl && chmod +x websocat_linux32_nossl
