@@ -13,7 +13,26 @@ You can find out more about Beoremote Halo on the Bang & Olufsen retail website 
 <br />
 <br />
 <br />
+## TL;DR
+The python package `beoremote-halo` contains a python library for communicating to Beoremote Halo and a command line tool for discovering Beoremote Halo on the network.
 
+Install using pip:
+```
+$ pip3 install beoremote-halo
+```
+Scan for Beoremote Halo on the network by running in the terminal
+```
+$ beoremote-halo scan
+If Beoremote Halo does not appear on the list, try waking it up while discovery in running.
+Press enter to exit...
+
+BeoremoteHalo-XXXXXXXX.local
+...
+```
+To tryout the Home Automation controls on Beoremote Halo run the bundle demo using the discovered Beoremote Halo hostname:
+```
+$ beoremote-halo demo --hostname BeoremoteHalo-XXXXXXXX.local
+```
 ## Beoremote Halo Home Automation System API
 The Home Automation System API is an open source Async API that allows you to interact with a Beoremote Halo from a control system.
 Using a websocket to communicate with the Beoremote Halo, it is possible to create a configuration of buttons on the Beoremote Halo to work with your Home automation to control all your Home Automation systems with an easily accessible and well crafted remote.
@@ -41,26 +60,3 @@ Halo will also send events on button press and wheel changes to the control syst
 
 
 For further details on the Open API including list of commands, examples and icons please also refer to the API description [here](https://bang-olufsen.github.io/beoremote-halo/)
-
-
-### Python script
-To get you started you can find a demo implementation created in Python in our examples folder [here](https://github.com/bang-olufsen/beoremote-halo/tree/main/examples)
-
-
-#### Prerequisites
-These examples have been tested using python 3.9 and requires the following packages to run
-```commandline
-$ pip3 install websocket-client zeroconf
-```
-#### Discover Beoremote Halo on the network
-Discover Beoremote Halo on the network using mDNS service, a python script is provided for ease of use called discover.py:
-```commandline
-$ python discover.py
-If Beoremote Halo does not appear on the list, try waking it up while discovery in running.
-Press enter to exit...
-
-BeoremoteHalo-XXXXXXXX.local
-...
-```
-#### Home Automation Examples
-Three examples are located in [examples](https://github.com/bang-olufsen/beoremote-halo/tree/main/examples).
