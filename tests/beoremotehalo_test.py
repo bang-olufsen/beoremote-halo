@@ -34,7 +34,7 @@ modules = {
 patcher = patch.dict("sys.modules")
 patcher.start()
 # pylint: disable=wrong-import-position
-from beoremote.beoremotehalo import BeoRemoteHalo, BeoremoteHaloExmaple
+from beoremote.beoremotehalo import BeoremoteHalo, BeoremoteHaloExmaple
 from beoremote.icons import Icons
 from beoremote.update import Update
 from beoremote.updateButton import UpdateButton
@@ -43,12 +43,12 @@ from beoremote.updateButton import UpdateButton
 class MyTestCase(unittest.TestCase):
     @patch("websocket.WebSocketApp.run_forever")
     def test_connect(self, run_forever):
-        remote = BeoRemoteHalo("192.168.1.127")
+        remote = BeoremoteHalo("192.168.1.127")
         remote.connect()
         assert run_forever.called
         self.assertEqual(1, run_forever.call_count)
 
-    def test_beoremote_halo_exmaple(self):
+    def test_beoremote_halo_example(self):
         config = BeoremoteHaloExmaple()
 
         self.assertEqual(len(config.configuration.pages), 2)
@@ -68,14 +68,16 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(config.configuration.pages[0].buttons[0].state, "active")
 
     def test_verbose(self):
-        remote = BeoRemoteHalo("192.168.1.127")
+        remote = BeoremoteHalo("192.168.1.127")
+        self.assertEqual(remote.verbose, False)
+        remote.set_verbosity(True)
         self.assertEqual(remote.verbose, True)
         remote.set_verbosity(False)
         self.assertEqual(remote.verbose, False)
 
     @patch("websocket.WebSocketApp.send")
     def test_send(self, send):
-        remote = BeoRemoteHalo("192.168.1.127")
+        remote = BeoremoteHalo("192.168.1.127")
         button = Update(
             UpdateButton(
                 "497f6eca-6276-4993-bfeb-53cbbbba6f08",
@@ -94,15 +96,15 @@ class MyTestCase(unittest.TestCase):
 
     @patch("builtins.print")
     def test_close(self, print):  # pylint: disable=redefined-builtin
-        remote = BeoRemoteHalo("192.168.1.127")
-
+        remote = BeoremoteHalo("192.168.1.127")
+        remote.set_verbosity(True)
         remote.on_close(None, None, None)
         self.assertTrue(print.called)
 
     @patch("websocket.WebSocketApp.send")
     def test_open(self, send):
         config = BeoremoteHaloExmaple()
-        remote = BeoRemoteHalo("192.168.1.127", config)
+        remote = BeoremoteHalo("192.168.1.127", config)
 
         remote.on_open(None)
         self.assertTrue(send.called)
@@ -114,7 +116,7 @@ class MyTestCase(unittest.TestCase):
         on_button_event = MagicMock()
         on_wheel_event = MagicMock()
 
-        remote = BeoRemoteHalo(
+        remote = BeoremoteHalo(
             "192.168.1.127",
             on_status_event=on_status_event,
             on_system_event=on_system_event,

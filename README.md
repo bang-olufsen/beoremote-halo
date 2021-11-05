@@ -96,14 +96,19 @@ Client -> Halo: {"update": {"type": "button", "id": "c7f6247f-3260-11ec-bd30-51f
 Halo -> client: {"event":{"type":"status","state":"ok","message":"Update"}}
 ...
 ```
-
+## Getting stated with `beoremote-halo` package
+In the following example a client instance is created and connects to a Beoremote Halo and listens for events. When a `SystemEvent` is received the `on_system_event` callback is executed and prints the Beoremote Halo's system state.
 ```python
-remote = BeoRemoteHalo(
+from beoremote.beoremotehalo import BeoremoteHalo
+from beoremote.systemEvent import SystemEvent
+
+def on_system_event(beoremote_halo: BeoremoteHalo, event: SystemEvent):
+    print("System event: {}".format(event.state))
+
+remote = BeoremoteHalo(
     host="BeoremoteHalo-XXXXXXXX.local",
-    configuration=config,   # Configuration object created using beoremote.configuration
-    on_system_event=on_system_event,
-    on_wheel_event=on_wheel_event,
-    on_button_event=on_button_event,
+    on_system_event=on_system_event
 )
+remote.set_verbosity(True)
 remote.connect()
 ```

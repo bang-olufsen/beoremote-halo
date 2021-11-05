@@ -25,9 +25,8 @@ import sys
 import time
 from multiprocessing import Process, Semaphore
 
-from beoremote.beoremotehalo import BeoRemoteHalo, BeoremoteHaloExmaple
+from beoremote.beoremotehalo import BeoremoteHalo, BeoremoteHaloExmaple
 from beoremote.buttonEvent import ButtonEvent
-from beoremote.configuration import Configuration
 from beoremote.systemEvent import SystemEvent
 from beoremote.text import Text
 from beoremote.update import Update
@@ -51,7 +50,7 @@ def clamp(value, min_value, max_value):
     return max(min(value, max_value), min_value)
 
 
-def on_system_event(beoremote_halo: Configuration, event: SystemEvent):
+def on_system_event(beoremote_halo: BeoremoteHalo, event: SystemEvent):
     """
 
     :param beoremote_halo:
@@ -60,7 +59,7 @@ def on_system_event(beoremote_halo: Configuration, event: SystemEvent):
     del beoremote_halo, event  # unused
 
 
-def on_wheel_event(beoremote_halo: Configuration, event: WheelEvent):
+def on_wheel_event(beoremote_halo: BeoremoteHalo, event: WheelEvent):
     """
 
     :param beoremote_halo:
@@ -82,7 +81,7 @@ def on_wheel_event(beoremote_halo: Configuration, event: WheelEvent):
         beoremote_halo.send(update)
 
 
-def oven_timer_function(beoremote_halo: Configuration, button_id: str, content: str):
+def oven_timer_function(beoremote_halo: BeoremoteHalo, button_id: str, content: str):
     """
 
     :param beoremote_halo:
@@ -113,7 +112,7 @@ def oven_timer_function(beoremote_halo: Configuration, button_id: str, content: 
         pass
 
 
-def on_button_event(beoremote_halo: Configuration, event: ButtonEvent):
+def on_button_event(beoremote_halo: BeoremoteHalo, event: ButtonEvent):
     """
 
     :param beoremote_halo:
@@ -153,14 +152,14 @@ def on_button_event(beoremote_halo: Configuration, event: ButtonEvent):
 
 
 def backend(hostname: str):
-    remote = BeoRemoteHalo(
+    remote = BeoremoteHalo(
         host=hostname,
         configuration=config,
         on_system_event=on_system_event,
         on_wheel_event=on_wheel_event,
         on_button_event=on_button_event,
     )
-
+    remote.set_verbosity(True)
     remote.connect()
     for process in processes:
         process.terminate()

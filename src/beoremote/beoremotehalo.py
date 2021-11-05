@@ -34,7 +34,7 @@ from beoremote.text import Text
 from beoremote.update import Update
 
 
-class BeoRemoteHalo:  # pylint: disable=too-many-instance-attributes
+class BeoremoteHalo:  # pylint: disable=too-many-instance-attributes
     """
     Beoremote connection controller
     Creates and maintain a websocket to Beoremote Halo on port 8080
@@ -64,7 +64,7 @@ class BeoRemoteHalo:  # pylint: disable=too-many-instance-attributes
             on_close=self.on_close,
         )
         self.configuration = configuration
-        self.verbose = True
+        self.verbose = False
         self.on_status_event = on_status_event
         self.on_power_event = on_power_event
         self.on_system_event = on_system_event
