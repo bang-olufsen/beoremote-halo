@@ -59,7 +59,7 @@ def demo(hostname):
 @cli.command(help="Connect to a Halo and listen for events")
 @click.option("--hostname", required=True)
 def listen(hostname):
-    remote = beoremotehalo.BeoRemoteHalo(hostname)
+    remote = beoremotehalo.BeoremoteHalo(hostname)
     remote.connect()
 
 
