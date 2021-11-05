@@ -37,10 +37,11 @@ jobs:
 
       - name: Verify package - Connect Demo
         run: |
+          wget https://github.com/vi/websocat/releases/download/v1.9.0/websocat_linux32_nossl && chmod +x websocat_linux32_nossl
           python3 -m venv env && source env/bin/activate
           python -m pip install dist/beoremote_halo-*-py3-none-any.whl
-          timeout 10 websocat -s 8080 --one-message --oneshot &
-          beoremote-halo demo --hostname localhost
+          timeout --preserve-status 5 ./websocat_linux32_nossl -s 8080 --one-message --oneshot &
+          timeout --preserve-status 5 beoremote-halo demo --hostname localhost
 
       - uses: actions/upload-artifact@v2
         with:
