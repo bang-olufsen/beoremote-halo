@@ -28,7 +28,7 @@ jobs:
           ./build.sh --lint
       - name: unitest + coveragecoverage
         run: |
-          export PYTHONPATH=$PYTHONPATH:src; coverage run --source=./src,./test -m pytest
+          export PYTHONPATH=$PYTHONPATH:src; coverage run --source=./src,./tests -m pytest
           coverage report
       - name: Create Python Package
         run: python3 -m build
