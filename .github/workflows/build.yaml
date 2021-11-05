@@ -30,7 +30,7 @@ jobs:
           ./build.sh --lint
       - name: unitest + coveragecoverage
         run: |
-          coverage run --source=./src,./test -m pytest
+          export PYTHONPATH=$PYTHONPATH:src/beoremote; coverage run --source=./src,./test -m pytest
           coverage report
       - name: Create Python Package
         run: python3 -m build

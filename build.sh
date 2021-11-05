@@ -19,6 +19,8 @@ case $1 in
     ;;
 
   --test)
-    export PYTHONPATH=$PYTHONPATH:src/beoremote; coverage run --source=./src,./test -m pytest && coverage report && coverage html -d coverage_html
+    export PYTHONPATH=$PYTHONPATH:src/beoremote; coverage run --source=./src,./test -m pytest
+    coverage report
+    coverage html -d coverage_html
     ;;
 esac
