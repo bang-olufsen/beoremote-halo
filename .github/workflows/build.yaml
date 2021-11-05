@@ -37,5 +37,5 @@ jobs:
 
       - uses: actions/upload-artifact@v2
         with:
-          name: beoremote
+          name: beoremote-halo
           path: dist/beoremote-halo*
