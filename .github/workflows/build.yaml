@@ -10,9 +10,7 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python 3.9
@@ -34,8 +32,22 @@ jobs:
           coverage report
       - name: Create Python Package
         run: python3 -m build
-
       - uses: actions/upload-artifact@v2
         with:
           name: beoremote-halo
           path: dist/*halo*
+
+  verify:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: beoremote-halo
+      - name: Verify package - Connect Demo
+        run: |
+          wget https://github.com/vi/websocat/releases/download/v1.9.0/websocat_linux32_nossl && chmod +x websocat_linux32_nossl
+          python3 -m venv env && source env/bin/activate
+          python -m pip install beoremote_halo-*-py3-none-any.whl
+          timeout --preserve-status 5 ./websocat_linux32_nossl -s 8080 --one-message --oneshot &
+          timeout --preserve-status 5 beoremote-halo demo --hostname localhost

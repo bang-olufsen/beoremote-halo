@@ -8,6 +8,8 @@ repos:
     -   id: end-of-file-fixer
     -   id: check-yaml
     -   id: check-added-large-files
+    -   id: name-tests-test
+        args: ['--django']
 
 -   repo: https://github.com/psf/black
     rev: 21.9b0
@@ -19,6 +21,12 @@ repos:
     hooks:
       - id: isort
         args: [--profile=black]
+
+-   repo: https://github.com/klieret/jekyll-relative-url-check
+    rev: v2.0.1
+    hooks:
+      -   id: jekyll-relative-url-check-html
+      -   id: jekyll-relative-url-check-markdown
 
 #-   repo: https://github.com/pycqa/pylint
 #    rev: v2.11.1
