@@ -32,7 +32,9 @@ class StatusEvent(Entity):
         ok = "ok"
         error = "error"
 
-    def __init__(self, type: str, state: State, message: str = None):
+    def __init__(
+        self, type: str, state: State, message: str = None
+    ):  # pylint: disable=redefined-builtin
         self.type = type
         self.state = state
         self.message = message

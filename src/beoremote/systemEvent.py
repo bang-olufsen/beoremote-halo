@@ -33,6 +33,6 @@ class SystemEvent(Entity):
         standby = "standby"
         sleep = "sleep"
 
-    def __init__(self, type: str, state: State):
+    def __init__(self, type: str, state: State):  # pylint: disable=redefined-builtin
         self.type = type
         self.state = state

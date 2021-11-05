@@ -36,7 +36,9 @@ class PowerEvent(Entity):
         fault = "fault"
         discharging = "discharging"
 
-    def __init__(self, type: str, capacity: int, state: State):
+    def __init__(
+        self, type: str, capacity: int, state: State
+    ):  # pylint: disable=redefined-builtin
         self.type = type
         self.capacity = capacity
         self.state = state

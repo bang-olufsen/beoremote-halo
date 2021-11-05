@@ -40,7 +40,7 @@ class UpdateButton(Entity):
         value: int = None,
         state: State = None,
         content=None,
-    ):
+    ):  # pylint: disable=redefined-builtin, too-many-arguments
         self.type = "button"
         self.id = id
         self.title = title

@@ -27,7 +27,7 @@ jobs:
           python3 -m pip install --upgrade build
       - name: Analysing the code with pylint
         run: |
-          pylint -j0 --disable=C0209,C0116,C0115,E0401 `find {src,test}|grep .py$|xargs`
+          ./build.sh --lint
       - name: unitest + coveragecoverage
         run: |
           coverage run --source=./src,./test -m pytest

@@ -33,20 +33,20 @@ class Configuration(Entity):
         class Pages(Entity):
             class Buttons(Entity):
                 class State(str, Enum):
-                    active = "active"
-                    inactive = "inactive"
+                    ACTIVE = "active"
+                    INACTIVE = "inactive"
 
                 def __init__(
                     self,
-                    id: str,
+                    button_id: str,
                     title: str,
                     subtitle: str,
                     value: int,
                     state: State,
                     content,
                     default: bool = False,
-                ):
-                    self.id = id
+                ):  # pylint: disable=too-many-arguments
+                    self.id = button_id
                     self.title = title
                     self.subtitle = subtitle
                     self.value = value
@@ -55,19 +55,19 @@ class Configuration(Entity):
                     self.default = default
 
                 def toggle_state(self):
-                    if self.state == self.State.active:
-                        self.state = self.State.inactive
+                    if self.state == self.State.ACTIVE:
+                        self.state = self.State.INACTIVE
                     else:
-                        self.state = self.State.active
+                        self.state = self.State.ACTIVE
 
-            def __init__(self, title: str, id: str, buttons: Sequence[Buttons]):
+            def __init__(self, title: str, page_id: str, buttons: Sequence[Buttons]):
                 self.title = title
-                self.id = id
+                self.id = page_id
                 self.buttons = buttons
 
-        def __init__(self, id: str, pages: Sequence[Pages]):
+        def __init__(self, configuration_id: str, pages: Sequence[Pages]):
             self.version = "1.0.1"
-            self.id = id
+            self.id = configuration_id
             self.pages = pages
 
     def __init__(self, configuration: Configuration):

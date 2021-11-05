@@ -26,7 +26,9 @@ from entity import Entity
 
 
 class UpdateNotification(Entity):
-    def __init__(self, id: str, title: str, subtitle: str):
+    def __init__(
+        self, id: str, title: str, subtitle: str
+    ):  # pylint: disable=redefined-builtin
         self.type = "notification"
         self.id = id
         self.title = title

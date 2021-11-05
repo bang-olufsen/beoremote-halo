@@ -45,7 +45,6 @@ class BeoRemoteHalo:  # pylint: disable=too-many-instance-attributes
         - Button Event
     """
 
-    # pylint: disable=too-many-arguments
     def __init__(
         self,
         host,
@@ -55,7 +54,7 @@ class BeoRemoteHalo:  # pylint: disable=too-many-instance-attributes
         on_system_event=None,
         on_button_event=None,
         on_wheel_event=None,
-    ):
+    ):  # pylint: disable=too-many-arguments
         self.websocket = websocket.WebSocketApp(
             "ws://{0}:8080".format(host),
             on_open=self.on_open,
@@ -144,7 +143,7 @@ class BeoRemoteHalo:  # pylint: disable=too-many-instance-attributes
         self.websocket.run_forever()
 
 
-class BeoremoteHaloExmaple(Configuration):  # pylint: disable=too-few-public-methods
+class BeoremoteHaloExmaple(Configuration):
     """
     Example configuration for Beoremote Halo
     """
@@ -155,8 +154,8 @@ class BeoremoteHaloExmaple(Configuration):  # pylint: disable=too-few-public-met
             "Kitchen Light",
             "On",
             95,
-            Configuration.Configuration.Pages.Buttons.State.active,
-            Icons(Icons.Icon.lights),
+            Configuration.Configuration.Pages.Buttons.State.ACTIVE,
+            Icons(Icons.Icon.LIGHTS),
         )
 
         oven_timer = Configuration.Configuration.Pages.Buttons(
@@ -164,7 +163,7 @@ class BeoremoteHaloExmaple(Configuration):  # pylint: disable=too-few-public-met
             "Oven Timer",
             "Temperature 200°C",
             0,
-            Configuration.Configuration.Pages.Buttons.State.inactive,
+            Configuration.Configuration.Pages.Buttons.State.INACTIVE,
             Text("01:35"),
             True,
         )
@@ -174,8 +173,8 @@ class BeoremoteHaloExmaple(Configuration):  # pylint: disable=too-few-public-met
             "Dining Table",
             "Off",
             80,
-            Configuration.Configuration.Pages.Buttons.State.inactive,
-            Icons(Icons.Icon.lights),
+            Configuration.Configuration.Pages.Buttons.State.INACTIVE,
+            Icons(Icons.Icon.LIGHTS),
         )
 
         fireplace = Configuration.Configuration.Pages.Buttons(
@@ -183,8 +182,8 @@ class BeoremoteHaloExmaple(Configuration):  # pylint: disable=too-few-public-met
             "Fire Place",
             "Ignite",
             None,
-            Configuration.Configuration.Pages.Buttons.State.inactive,
-            Icons(Icons.Icon.fireplace),
+            Configuration.Configuration.Pages.Buttons.State.INACTIVE,
+            Icons(Icons.Icon.LIGHTS),
         )
 
         blinds = Configuration.Configuration.Pages.Buttons(
@@ -192,8 +191,8 @@ class BeoremoteHaloExmaple(Configuration):  # pylint: disable=too-few-public-met
             "Blinds",
             "Closed",
             100,
-            Configuration.Configuration.Pages.Buttons.State.active,
-            Icons(Icons.Icon.blinds),
+            Configuration.Configuration.Pages.Buttons.State.ACTIVE,
+            Icons(Icons.Icon.BLINDS),
         )
 
         tv_back_light = Configuration.Configuration.Pages.Buttons(
@@ -201,8 +200,8 @@ class BeoremoteHaloExmaple(Configuration):  # pylint: disable=too-few-public-met
             "TV Backlight",
             "off",
             0,
-            Configuration.Configuration.Pages.Buttons.State.inactive,
-            Icons(Icons.Icon.rgb_lights),
+            Configuration.Configuration.Pages.Buttons.State.INACTIVE,
+            Icons(Icons.Icon.RGB_LIGHTS),
         )
 
         living_room_thermostat = Configuration.Configuration.Pages.Buttons(
@@ -210,7 +209,7 @@ class BeoremoteHaloExmaple(Configuration):  # pylint: disable=too-few-public-met
             "Thermostat",
             "Heating",
             55,
-            Configuration.Configuration.Pages.Buttons.State.inactive,
+            Configuration.Configuration.Pages.Buttons.State.INACTIVE,
             Text("21°C"),
             True,
         )

@@ -15,7 +15,7 @@ case $1 in
     ;;
 
   --lint)
-    pylint -j0 --disable=C0209,C0116,C0115,E0401 `find {src,test}|grep .py$|xargs`
+    pylint -j0 --disable=C0209,C0116,C0115,E0401,R0801,C0103,R0903 `find {src,test}|grep .py$|xargs`
     ;;
 
   --test)

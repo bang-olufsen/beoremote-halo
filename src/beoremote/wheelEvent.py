@@ -26,7 +26,9 @@ from entity import Entity
 
 
 class WheelEvent(Entity):
-    def __init__(self, type: str, id: str, counts: int):
+    def __init__(
+        self, type: str, id: str, counts: int
+    ):  # pylint: disable=redefined-builtin
         self.type = type
         self.id = id
         self.counts = counts

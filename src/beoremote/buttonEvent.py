@@ -32,7 +32,9 @@ class ButtonEvent(Entity):
         pressed = "pressed"
         released = "released"
 
-    def __init__(self, type: str, id: str, state: State):
+    def __init__(
+        self, type: str, id: str, state: State
+    ):  # pylint: disable=redefined-builtin
         self.type = type
         self.id = id
         self.state = state

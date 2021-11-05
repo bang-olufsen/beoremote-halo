@@ -83,18 +83,11 @@ class MyTestCase(unittest.TestCase):
                 "string",
                 100,
                 UpdateButton.State.active,
-                Icons(Icons.Icon.lights),
+                Icons(Icons.Icon.LIGHTS),
             )
         )
 
         remote.send(button)
-
-        update_string = (
-            r'{"update":{"type":"button","id":'
-            r'"497f6eca-6276-4993-bfeb-53cbbbba6f08","title":"string","subtitle":'
-            r'"string","value":100,"state":"active","content":{'
-            r'"icon":"lights"}}}'
-        )
 
         assert send.called
         self.assertEqual(1, send.call_count)
