@@ -25,7 +25,7 @@ SOFTWARE.
 from enum import Enum
 from typing import Sequence
 
-from entity import Entity
+from beoremote.entity import Entity
 
 
 class Configuration(Entity):

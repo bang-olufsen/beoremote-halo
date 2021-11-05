@@ -34,10 +34,10 @@ modules = {
 patcher = patch.dict("sys.modules")
 patcher.start()
 # pylint: disable=wrong-import-position
-from src.beoremote.beoremotehalo import BeoRemoteHalo, BeoremoteHaloExmaple
-from src.beoremote.icons import Icons
-from src.beoremote.update import Update
-from src.beoremote.updateButton import UpdateButton
+from beoremote.beoremotehalo import BeoRemoteHalo, BeoremoteHaloExmaple
+from beoremote.icons import Icons
+from beoremote.update import Update
+from beoremote.updateButton import UpdateButton
 
 
 class MyTestCase(unittest.TestCase):

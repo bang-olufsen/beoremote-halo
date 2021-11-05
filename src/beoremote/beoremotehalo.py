@@ -26,10 +26,11 @@ import time
 import uuid
 
 import websocket
-from configuration import Configuration
-from event import Event
-from icons import Icons
-from text import Text
+
+from beoremote.configuration import Configuration
+from beoremote.event import Event
+from beoremote.icons import Icons
+from beoremote.text import Text
 
 
 class BeoRemoteHalo:  # pylint: disable=too-many-instance-attributes

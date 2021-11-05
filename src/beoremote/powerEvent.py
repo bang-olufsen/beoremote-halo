@@ -24,7 +24,7 @@ SOFTWARE.
 
 from enum import Enum
 
-from entity import Entity
+from beoremote.entity import Entity
 
 
 class PowerEvent(Entity):
