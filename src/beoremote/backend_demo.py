@@ -25,7 +25,8 @@ import sys
 import time
 from multiprocessing import Process, Semaphore
 
-from beoremote.beoremotehalo import BeoremoteHalo, BeoremoteHaloExmaple
+from beoremote.beoremote_config_example import BeoremoteHaloExmaple
+from beoremote.beoremotehalo import BeoremoteHalo
 from beoremote.buttonEvent import ButtonEvent
 from beoremote.systemEvent import SystemEvent
 from beoremote.text import Text
@@ -39,31 +40,31 @@ processes = []
 oven_timer = {"running": False}
 
 
-def clamp(value, min_value, max_value):
+def clamp(value: int, min_value: int, max_value: int):
     """
 
-    :param max_value:
-    :param min_value:
-    :param value:
+    :param value: value to clap between min_value and max_value
+    :param min_value: lower limit used to clamp value
+    :param max_value: upper limit used to clamp value
     :return:
     """
     return max(min(value, max_value), min_value)
 
 
-def on_system_event(beoremote_halo: BeoremoteHalo, event: SystemEvent):
+def on_system_event(client: BeoremoteHalo, event: SystemEvent):
     """
 
-    :param beoremote_halo:
-    :param event:
+    :param client: Client handle to communicate with Beoremote Halo
+    :param event: System Event from Beoremote Halo
     """
-    del beoremote_halo, event  # unused
+    del client, event  # unused
 
 
-def on_wheel_event(beoremote_halo: BeoremoteHalo, event: WheelEvent):
+def on_wheel_event(client: BeoremoteHalo, event: WheelEvent):
     """
 
-    :param beoremote_halo:
-    :param event:
+    :param client: Client handle to communicate with Beoremote Halo
+    :param event: Wheel Event from Beoremote Halo
     """
     button = config[event.id]
     if button and button.value is not None:
@@ -78,15 +79,15 @@ def on_wheel_event(beoremote_halo: BeoremoteHalo, event: WheelEvent):
                 content=None,
             )
         )
-        beoremote_halo.send(update)
+        client.send(update)
 
 
-def oven_timer_function(beoremote_halo: BeoremoteHalo, button_id: str, content: str):
+def oven_timer_function(client: BeoremoteHalo, button_id: str, content: Text):
     """
 
-    :param beoremote_halo:
-    :param button_id:
-    :param content:
+    :param client: Client handle to communicate with Beoremote Halo
+    :param button_id: Uuid of button to update
+    :param content: Text content of the button to update
     """
     try:
         minutes, seconds = content.text.split(":")
@@ -105,18 +106,18 @@ def oven_timer_function(beoremote_halo: BeoremoteHalo, button_id: str, content: 
                         content=content,
                     )
                 )
-                beoremote_halo.send(update)
+                client.send(update)
                 time.sleep(1)
             seconds = 59
     except KeyboardInterrupt:
         pass
 
 
-def on_button_event(beoremote_halo: BeoremoteHalo, event: ButtonEvent):
+def on_button_event(client: BeoremoteHalo, event: ButtonEvent):
     """
 
-    :param beoremote_halo:
-    :param event:
+    :param client: Client handle to communicate with Beoremote Halo
+    :param event: Button Event from Beoremote Halo
     """
     button = config[event.id]
     if event.state == "released":
@@ -131,7 +132,7 @@ def on_button_event(beoremote_halo: BeoremoteHalo, event: ButtonEvent):
                 content=None,
             )
         )
-        beoremote_halo.send(update)
+        client.send(update)
 
         if button and button.title == "Oven Timer":
             if oven_timer["running"]:
@@ -144,7 +145,7 @@ def on_button_event(beoremote_halo: BeoremoteHalo, event: ButtonEvent):
                 else:
                     proc = Process(
                         target=oven_timer_function,
-                        args=(beoremote_halo, event.id, button.content),
+                        args=(client, event.id, button.content),
                     )
                     oven_timer["running"] = True
                     processes.append(proc)

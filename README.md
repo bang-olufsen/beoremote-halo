@@ -27,13 +27,13 @@ Connection to Beoremote Halo is done using a websocket client and connecting to 
 Once connection is established a configuration must be sent to Beoremote Halo for it to configure the screens and buttons.
 The Beoremote Halo will answer back if the configuration was successful or not.
 <br />
-The following MSC chart shows an example of sending a configuration with 1 button on a screen and then pressing that button. 
+The following MSC chart shows an example of sending a configuration with 1 button on a screen and then pressing that button.
 
 <img src="https://github.com/bang-olufsen/beoremote-halo/blob/main/Docs/Images/Halo_MSC_config_button_press.png" width=70% height=70% align="center">
 
 For further details on the Open API including list of commands, examples and icons please also refer to the API description [here](https://bang-olufsen.github.io/beoremote-halo/)
 
-Below you will also find some examples in Python to get you started. 
+Below you will also find some examples in Python to get you started.
 
 ## TL;DR
 The python package `beoremote-halo` contains a python library for communicating to Beoremote Halo and a command line tool for discovering Beoremote Halo on the network.
@@ -78,8 +78,8 @@ This demo creates a websocket client to Beoremote Halo on port 8080. Configures 
 
 ```
 $ beoremote-halo demo --hostname BeoremoteHalo-XXXXXXXX.local
-Client -> Halo: {"configuration": {"version": "1.0.1", ...}}
 Halo -> client: {"event":{"type":"system","state":"active"}}
+Client -> Halo: {"configuration": {"version": "1.0.1", ...}}
 Halo -> client: {"event":{"type":"status","state":"ok","message":"Configuration"}}
 Halo -> client: {"event":{"type":"button","id":"c7f6247f-3260-11ec-bd30-51f891360684","state":"pressed"}}
 Halo -> client: {"event":{"type":"button","id":"c7f6247f-3260-11ec-bd30-51f891360684","state":"released"}}
@@ -98,7 +98,7 @@ In the following example a client instance is created and connects to a Beoremot
 from beoremote.beoremotehalo import BeoremoteHalo
 from beoremote.systemEvent import SystemEvent
 
-def on_system_event(beoremote_halo: BeoremoteHalo, event: SystemEvent):
+def on_system_event(client: BeoremoteHalo, event: SystemEvent):
     print("System event: {}".format(event.state))
 
 remote = BeoremoteHalo(
