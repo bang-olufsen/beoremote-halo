@@ -30,8 +30,9 @@ import websocket
 from beoremote.configuration import Configuration
 from beoremote.event import Event
 from beoremote.icons import Icons
+from beoremote.statusEvent import StatusEvent
+from beoremote.systemEvent import SystemEvent
 from beoremote.text import Text
-from beoremote.update import Update
 
 
 class BeoremoteHalo:  # pylint: disable=too-many-instance-attributes
@@ -70,6 +71,12 @@ class BeoremoteHalo:  # pylint: disable=too-many-instance-attributes
         self.on_system_event = on_system_event
         self.on_button_event = on_button_event
         self.on_wheel_event = on_wheel_event
+        self.reconnect = True
+        self.configured = False
+        self.reconnect_attempts = 3
+        self.attempts = 3
+        self.ping_interval = 30
+        self.ping_timeout = 5
         self.events = any(
             [
                 self.on_status_event,
@@ -80,7 +87,12 @@ class BeoremoteHalo:  # pylint: disable=too-many-instance-attributes
             ]
         )
 
-    def set_verbosity(self, verbose: bool):
+    def set_auto_reconnect(self, reconnect: bool, attempts: int):
+        self.reconnect = reconnect
+        self.attempts = attempts
+        self.reconnect_attempts = attempts
+
+    def set_verbosity(self, verbose):
         """
 
         :param verbose:
@@ -94,20 +106,26 @@ class BeoremoteHalo:  # pylint: disable=too-many-instance-attributes
         :param message:
         """
         del web_socket
+
         if self.verbose:
             print("Halo -> client: {}".format(message))
 
-        if self.events:
-            event = Event.from_json(message).event
-            {
-                "status": lambda msg: self.on_status_event(self, msg),
-                "power": lambda msg: self.on_power_event(self, msg),
-                "system": lambda msg: self.on_system_event(self, msg),
-                "button": lambda msg: self.on_button_event(self, msg),
-                "wheel": lambda msg: self.on_wheel_event(self, msg),
-            }[event.type](event)
+        event = Event.from_json(message).event
+        {
+            "status": lambda msg: (
+                self._on_status_event_callback(msg),
+                self.on_status_event(self, msg),
+            ),
+            "power": lambda msg: self.on_power_event(self, msg),
+            "system": lambda msg: (
+                self._on_system_event_callback(msg),
+                self.on_system_event(self, msg),
+            ),
+            "button": lambda msg: self.on_button_event(self, msg),
+            "wheel": lambda msg: self.on_wheel_event(self, msg),
+        }[event.type](event)
 
-    def send(self, update: Update):
+    def send(self, update):
         """
 
         :param update:
@@ -127,6 +145,24 @@ class BeoremoteHalo:  # pylint: disable=too-many-instance-attributes
         del web_socket, close_status_code, close_msg
         if self.verbose:
             print("### Connection Closed ###")
+        self.reconnect = False
+
+    def _on_status_event_callback(self, event: StatusEvent):
+        if (
+            isinstance(event, StatusEvent)
+            and event.state == StatusEvent.State.ok
+            and event.message == "Configuration"
+        ):
+            self.configured = True
+            self.reconnect_attempts = self.attempts
+
+    def _on_system_event_callback(self, event: SystemEvent):
+        if (
+            self.configured is False
+            and event.state == SystemEvent.State.active
+            and self.configuration is not None
+        ):
+            self.send(self.configuration)
 
     def on_open(self, web_socket):
         """
@@ -134,15 +170,28 @@ class BeoremoteHalo:  # pylint: disable=too-many-instance-attributes
         :param web_socket:
         """
         del web_socket
-        time.sleep(1)
-        if self.configuration is not None:
-            self.send(self.configuration)
+
+        if self.verbose:
+            print("### Connection Open ###")
 
     def connect(self):
         """
         Connect to Beoremote Halo
         """
-        self.websocket.run_forever()
+        while self.reconnect and self.reconnect_attempts > 0:
+            status = self.websocket.run_forever(
+                ping_interval=self.ping_interval, ping_timeout=self.ping_timeout
+            )
+            self.reconnect_attempts = self.reconnect_attempts - 1
+            self.configured = False
+            if status is True and self.reconnect:
+                print(
+                    "### Connection to server lost, retrying again in 30 seconds ({}/{} attempts) "
+                    "###".format(self.attempts - self.reconnect_attempts, self.attempts)
+                )
+                time.sleep(30)  # wait 30 second before trying to reconnect
+            else:
+                self.reconnect = False
 
 
 class BeoremoteHaloExmaple(Configuration):
