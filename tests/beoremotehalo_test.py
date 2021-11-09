@@ -36,8 +36,6 @@ patcher.start()
 
 # pylint: disable=wrong-import-position
 from beoremote.beoremote_config_example import BeoremoteHaloExmaple
-
-# pylint: disable=wrong-import-position
 from beoremote.beoremotehalo import BeoremoteHalo
 from beoremote.icons import Icons
 from beoremote.update import Update
