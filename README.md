@@ -92,7 +92,7 @@ Client -> Halo: {"update": {"type": "button", "id": "c7f6247f-3260-11ec-bd30-51f
 Halo -> client: {"event":{"type":"status","state":"ok","message":"Update"}}
 ...
 ```
-## Getting stated with `beoremote-halo` package
+## Getting started with `beoremote-halo` package
 In the following example a client instance is created and connects to a Beoremote Halo and listens for events. When a `SystemEvent` is received the `on_system_event` callback is executed and prints the Beoremote Halo's system state.
 ```python
 from beoremote.beoremotehalo import BeoremoteHalo
