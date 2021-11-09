@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
+import re
 import time
 import uuid
 
@@ -57,10 +58,24 @@ class BeoremoteHalo:  # pylint: disable=too-many-instance-attributes
         on_system_event=None,
         on_button_event=None,
         on_wheel_event=None,
+        on_close_event=None,
+        on_open=None,
     ):  # pylint: disable=too-many-arguments
+        """
+
+        :param host:
+        :param configuration:
+        :param on_status_event:
+        :param on_power_event:
+        :param on_system_event:
+        :param on_button_event:
+        :param on_wheel_event:
+        :param on_close_event:
+        :param on_open:
+        """
         self.websocket = websocket.WebSocketApp(
             "ws://{0}:8080".format(host),
-            on_open=self.on_open,
+            on_open=on_open,
             on_message=self.on_message,
             on_close=self.on_close,
         )
@@ -71,6 +86,7 @@ class BeoremoteHalo:  # pylint: disable=too-many-instance-attributes
         self.on_system_event = on_system_event
         self.on_button_event = on_button_event
         self.on_wheel_event = on_wheel_event
+        self.on_close_event = on_close_event
         self.reconnect = True
         self.configured = False
         self.reconnect_attempts = 3
@@ -88,22 +104,27 @@ class BeoremoteHalo:  # pylint: disable=too-many-instance-attributes
         )
 
     def set_auto_reconnect(self, reconnect: bool, attempts: int):
+        """
+        Set if client should reconnect to server in the case of connection loss
+        :param reconnect: If client should reconnect
+        :param attempts: Maximum number of reconnect tries
+        """
         self.reconnect = reconnect
         self.attempts = attempts
         self.reconnect_attempts = attempts
 
-    def set_verbosity(self, verbose):
+    def set_verbosity(self, verbose: bool):
         """
-
-        :param verbose:
+        Configure verbosity
+        :param verbose: Set verbosity True/False
         """
         self.verbose = verbose
 
     def on_message(self, web_socket, message):
         """
-
-        :param web_socket:
-        :param message:
+        Handling incoming messages from Beoremote Halo and directing them to callbacks
+        :param web_socket: websocket.WebSocketApp handle
+        :param message: received message on websocket
         """
         del web_socket
 
@@ -125,29 +146,36 @@ class BeoremoteHalo:  # pylint: disable=too-many-instance-attributes
             "wheel": lambda msg: self.on_wheel_event(self, msg),
         }[event.type](event)
 
-    def send(self, update):
+    def send(self, message):
         """
-
-        :param update:
+        Send message to Beoremote Halo
+        :param message: Either a Configuration or Update
         """
-        message = update if isinstance(update, str) else update.to_json()
+        message = message if isinstance(message, str) else message.to_json()
         if self.verbose:
             print("Client -> Halo: {}".format(message))
         self.websocket.send(message)
 
     def on_close(self, web_socket, close_status_code, close_msg):
         """
-
-        :param web_socket:
-        :param close_status_code:
-        :param close_msg:
+        Called when the websocket is closed, either by Beoremote Halo or the client
+        If the on_close_event callback is set, it will be called with status code and message
+        :param web_socket: websocket.WebSocketApp handle
+        :param close_status_code: websocket closed status code
+        :param close_msg: websocket closed message
         """
-        del web_socket, close_status_code, close_msg
+        del web_socket
         if self.verbose:
             print("### Connection Closed ###")
         self.reconnect = False
+        if self.on_close_event:
+            self.on_close_event(close_status_code, close_msg)
 
     def _on_status_event_callback(self, event: StatusEvent):
+        """
+        Internal handle verifying Beoremte was configured correctly
+        :param event: Status Event received from Beoremote Halo
+        """
         if (
             isinstance(event, StatusEvent)
             and event.state == StatusEvent.State.ok
@@ -155,24 +183,28 @@ class BeoremoteHalo:  # pylint: disable=too-many-instance-attributes
         ):
             self.configured = True
             self.reconnect_attempts = self.attempts
+        elif (
+            isinstance(event, StatusEvent)
+            and event.state == StatusEvent.State.error
+            and re.match(R"Invalid Configuration", event.message)
+        ):
+            self.configured = False
+            self.reconnect = False
+            print(event.message)
+        elif isinstance(event, StatusEvent):
+            print(event.message)
 
     def _on_system_event_callback(self, event: SystemEvent):
+        """
+
+        :param event:
+        """
         if (
             self.configured is False
             and event.state == SystemEvent.State.active
             and self.configuration is not None
         ):
             self.send(self.configuration)
-
-    def on_open(self, web_socket):
-        """
-        Open connection to Beoremote Halo send the configuration
-        :param web_socket:
-        """
-        del web_socket
-
-        if self.verbose:
-            print("### Connection Open ###")
 
     def connect(self):
         """

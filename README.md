@@ -78,8 +78,8 @@ This demo creates a websocket client to Beoremote Halo on port 8080. Configures 
 
 ```
 $ beoremote-halo demo --hostname BeoremoteHalo-XXXXXXXX.local
-Client -> Halo: {"configuration": {"version": "1.0.1", ...}}
 Halo -> client: {"event":{"type":"system","state":"active"}}
+Client -> Halo: {"configuration": {"version": "1.0.1", ...}}
 Halo -> client: {"event":{"type":"status","state":"ok","message":"Configuration"}}
 Halo -> client: {"event":{"type":"button","id":"c7f6247f-3260-11ec-bd30-51f891360684","state":"pressed"}}
 Halo -> client: {"event":{"type":"button","id":"c7f6247f-3260-11ec-bd30-51f891360684","state":"released"}}
@@ -98,7 +98,7 @@ In the following example a client instance is created and connects to a Beoremot
 from beoremote.beoremotehalo import BeoremoteHalo
 from beoremote.systemEvent import SystemEvent
 
-def on_system_event(beoremote_halo: BeoremoteHalo, event: SystemEvent):
+def on_system_event(client: BeoremoteHalo, event: SystemEvent):
     print("System event: {}".format(event.state))
 
 remote = BeoremoteHalo(

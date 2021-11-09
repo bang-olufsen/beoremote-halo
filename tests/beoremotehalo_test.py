@@ -92,7 +92,6 @@ class MyTestCase(unittest.TestCase):
 
         def on_message_system_event(*args, **kwargs):
             del args, kwargs
-            remote.on_open(websocket)
             remote.on_message(
                 websocket, r'{"event":{"type":"system","state":"active"}}'
             )
@@ -148,6 +147,90 @@ class MyTestCase(unittest.TestCase):
         self.assertTrue(mock_run_forever.called)
         self.assertFalse(websocket.called)
 
+    def test_connect_invalid_config(self):
+        on_system_event = MagicMock()
+        on_status_event = MagicMock()
+        on_power_event = MagicMock()
+        on_button_event = MagicMock()
+        on_wheel_event = MagicMock()
+        config = BeoremoteHaloExmaple()
+        remote = BeoremoteHalo(
+            "192.168.1.127",
+            on_status_event=on_status_event,
+            on_system_event=on_system_event,
+            on_power_event=on_power_event,
+            on_button_event=on_button_event,
+            on_wheel_event=on_wheel_event,
+            configuration=config,
+        )
+
+        remote.set_auto_reconnect(True, 1)
+        remote.set_verbosity(True)
+
+        mock_send = MagicMock()
+        websocket = MagicMock()
+        remote.websocket = websocket
+        mock_run_forever = MagicMock()
+
+        def on_message_system_event(*args, **kwargs):
+            del args, kwargs
+            remote.on_message(
+                websocket, r'{"event":{"type":"system","state":"active"}}'
+            )
+
+        def on_message_status_event(*args, **kwargs):
+            del args, kwargs
+            remote.on_message(
+                websocket,
+                r'{"event":{"type":"status","state":"error","message":"Invalid Configuration, '
+                r'button uuid @page: cfbe9c83-413d-11ec-92ac-b7df6f9ee3e2"}}',
+            )
+
+        mock_run_forever.return_value = False
+        mock_run_forever.side_effect = on_message_system_event
+        mock_send.side_effect = on_message_status_event
+
+        remote.websocket.send = mock_send
+        remote.websocket.run_forever = mock_run_forever
+
+        remote.connect()
+
+        config_string = (
+            R'\{"configuration":\{"version":"1\.0\.1","id":"\b[0-9a-f]{8}\b-[0-9a-f]{'
+            R'4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}\b","pages":\[\{'
+            R'"title":"Kitchen","id":"\b[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-['
+            R'0-9a-f]{4}-\b[0-9a-f]{12}\b","buttons":\[\{"id":"\b[0-9a-f]{8}\b-['
+            R'0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}\b","title":"Kitchen\ '
+            R'Light","subtitle":"On","value":95,"state":"active","content":\{'
+            R'"icon":"lights"\},"default":false\},\{"id":"\b[0-9a-f]{8}\b-[0-9a-f]{'
+            R'4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}\b","title":"Oven\ Timer",'
+            R'"subtitle":"Temperature\ 200\\u00b0C","value":0,"state":"inactive",'
+            R'"content":\{"text":"01:35"\},"default":true\},\{"id":"\b[0-9a-f]{8}\b-['
+            R'0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}\b","title":"Dining\ '
+            R'Table","subtitle":"Off","value":80,"state":"inactive","content":\{'
+            R'"icon":"lights"\},"default":false\}\]\},\{"title":"living\ room",'
+            R'"id":"\b[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{'
+            R'12}\b","buttons":\[\{"id":"\b[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-['
+            R'0-9a-f]{4}-\b[0-9a-f]{12}\b","title":"Fire\ Place","subtitle":"Ignite",'
+            R'"state":"inactive","content":\{"icon":"lights"\},"default":false\},'
+            R'\{"id":"\b[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{'
+            R'12}\b","title":"Blinds","subtitle":"Closed","value":100,'
+            R'"state":"active","content":\{"icon":"blinds"\},"default":false\},'
+            R'\{"id":"\b[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{'
+            R'12}\b","title":"TV\ Backlight","subtitle":"off","value":0,'
+            R'"state":"inactive","content":\{"icon":"rgb_lights"\},"default":false\},'
+            R'\{"id":"\b[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{'
+            R'12}\b","title":"Thermostat","subtitle":"Heating","value":55,'
+            R'"state":"inactive","content":\{"text":"21\\u00b0C"\},'
+            R'"default":true\}\]\}\]\}\}'
+        )
+
+        self.assertRegex(mock_send.call_args.args[0], config_string)
+        self.assertTrue(mock_send.called)
+        self.assertTrue(mock_run_forever.called)
+        self.assertFalse(websocket.called)
+        self.assertEqual(1, mock_run_forever.call_count)
+
     def test_beoremote_halo_example(self):
         config = BeoremoteHaloExmaple()
 
@@ -196,18 +279,12 @@ class MyTestCase(unittest.TestCase):
 
     @patch("builtins.print")
     def test_close(self, print):  # pylint: disable=redefined-builtin
-        remote = BeoremoteHalo("192.168.1.127")
+        mock_close_callback = MagicMock()
+        remote = BeoremoteHalo("192.168.1.127", on_close_event=mock_close_callback)
         remote.set_verbosity(True)
         remote.on_close(None, None, None)
         self.assertTrue(print.called)
-
-    @patch("websocket.WebSocketApp.send")
-    def test_open(self, send):
-        config = BeoremoteHaloExmaple()
-        remote = BeoremoteHalo("192.168.1.127", config)
-
-        remote.on_open(None)
-        self.assertFalse(send.called)
+        mock_close_callback.assert_called_with(None, None)
 
     def test_on_message(self):
         on_system_event = MagicMock()
