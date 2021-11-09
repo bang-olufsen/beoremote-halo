@@ -149,6 +149,47 @@ class MyTestCase(unittest.TestCase):
         self.assertTrue(mock_run_forever.called)
         self.assertFalse(websocket.called)
 
+    def test_connect_system_sleep_event_received(self):
+        on_system_event = MagicMock()
+        on_status_event = MagicMock()
+        on_power_event = MagicMock()
+        on_button_event = MagicMock()
+        on_wheel_event = MagicMock()
+        config = BeoremoteHaloExmaple()
+        remote = BeoremoteHalo(
+            "192.168.1.127",
+            on_status_event=on_status_event,
+            on_system_event=on_system_event,
+            on_power_event=on_power_event,
+            on_button_event=on_button_event,
+            on_wheel_event=on_wheel_event,
+            configuration=config,
+        )
+
+        remote.set_auto_reconnect(True, 1)
+        remote.set_verbosity(True)
+
+        mock_send = MagicMock()
+        websocket = MagicMock()
+        remote.websocket = websocket
+        mock_run_forever = MagicMock()
+
+        mock_run_forever.return_value = False
+        remote.websocket.send = mock_send
+        remote.websocket.run_forever = mock_run_forever
+
+        def on_message_system_event(*args, **kwargs):
+            del args, kwargs
+            remote.on_message(websocket, r'{"event":{"type":"system","state":"sleep"}}')
+
+        mock_run_forever.side_effect = on_message_system_event
+
+        remote.connect()
+
+        self.assertFalse(mock_send.called)
+        self.assertTrue(mock_run_forever.called)
+        self.assertFalse(websocket.called)
+
     def test_connect_invalid_config(self):
         on_system_event = MagicMock()
         on_status_event = MagicMock()
