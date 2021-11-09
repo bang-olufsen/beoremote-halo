@@ -24,16 +24,12 @@ SOFTWARE.
 
 import re
 import time
-import uuid
 
 import websocket
 
-from beoremote.configuration import Configuration
 from beoremote.event import Event
-from beoremote.icons import Icons
 from beoremote.statusEvent import StatusEvent
 from beoremote.systemEvent import SystemEvent
-from beoremote.text import Text
 
 
 class BeoremoteHalo:  # pylint: disable=too-many-instance-attributes
@@ -63,15 +59,15 @@ class BeoremoteHalo:  # pylint: disable=too-many-instance-attributes
     ):  # pylint: disable=too-many-arguments
         """
 
-        :param host:
-        :param configuration:
-        :param on_status_event:
-        :param on_power_event:
-        :param on_system_event:
-        :param on_button_event:
-        :param on_wheel_event:
-        :param on_close_event:
-        :param on_open:
+        :param host: Hostname or ipaddress of Beoremote Halo
+        :param configuration: Configuration to send to Beoremote Halo
+        :param on_status_event: Callback for receiving status events
+        :param on_power_event: Callback for receiving power events
+        :param on_system_event: Callback for receiving system events
+        :param on_button_event: Callback for receiving button events
+        :param on_wheel_event: Callback for receiving wheel events
+        :param on_close_event: Callback when websocket is closed
+        :param on_open: Callback when websocket is opened
         """
         self.websocket = websocket.WebSocketApp(
             "ws://{0}:8080".format(host),
@@ -196,8 +192,8 @@ class BeoremoteHalo:  # pylint: disable=too-many-instance-attributes
 
     def _on_system_event_callback(self, event: SystemEvent):
         """
-
-        :param event:
+        Sends the configuration to Beoremote Halo after receiving a system state active
+        :param event: System Event message
         """
         if (
             self.configured is False
@@ -224,89 +220,3 @@ class BeoremoteHalo:  # pylint: disable=too-many-instance-attributes
                 time.sleep(30)  # wait 30 second before trying to reconnect
             else:
                 self.reconnect = False
-
-
-class BeoremoteHaloExmaple(Configuration):
-    """
-    Example configuration for Beoremote Halo
-    """
-
-    def __init__(self):
-        kitchen_light = Configuration.Configuration.Pages.Buttons(
-            str(uuid.uuid1()),
-            "Kitchen Light",
-            "On",
-            95,
-            Configuration.Configuration.Pages.Buttons.State.ACTIVE,
-            Icons(Icons.Icon.LIGHTS),
-        )
-
-        oven_timer = Configuration.Configuration.Pages.Buttons(
-            str(uuid.uuid1()),
-            "Oven Timer",
-            "Temperature 200°C",
-            0,
-            Configuration.Configuration.Pages.Buttons.State.INACTIVE,
-            Text("01:35"),
-            True,
-        )
-
-        dining_table = Configuration.Configuration.Pages.Buttons(
-            str(uuid.uuid1()),
-            "Dining Table",
-            "Off",
-            80,
-            Configuration.Configuration.Pages.Buttons.State.INACTIVE,
-            Icons(Icons.Icon.LIGHTS),
-        )
-
-        fireplace = Configuration.Configuration.Pages.Buttons(
-            str(uuid.uuid1()),
-            "Fire Place",
-            "Ignite",
-            None,
-            Configuration.Configuration.Pages.Buttons.State.INACTIVE,
-            Icons(Icons.Icon.LIGHTS),
-        )
-
-        blinds = Configuration.Configuration.Pages.Buttons(
-            str(uuid.uuid1()),
-            "Blinds",
-            "Closed",
-            100,
-            Configuration.Configuration.Pages.Buttons.State.ACTIVE,
-            Icons(Icons.Icon.BLINDS),
-        )
-
-        tv_back_light = Configuration.Configuration.Pages.Buttons(
-            str(uuid.uuid1()),
-            "TV Backlight",
-            "off",
-            0,
-            Configuration.Configuration.Pages.Buttons.State.INACTIVE,
-            Icons(Icons.Icon.RGB_LIGHTS),
-        )
-
-        living_room_thermostat = Configuration.Configuration.Pages.Buttons(
-            str(uuid.uuid1()),
-            "Thermostat",
-            "Heating",
-            55,
-            Configuration.Configuration.Pages.Buttons.State.INACTIVE,
-            Text("21°C"),
-            True,
-        )
-
-        kitchen = Configuration.Configuration.Pages(
-            "Kitchen", str(uuid.uuid1()), [kitchen_light, oven_timer, dining_table]
-        )
-
-        living_room = Configuration.Configuration.Pages(
-            "living room",
-            str(uuid.uuid1()),
-            [fireplace, blinds, tv_back_light, living_room_thermostat],
-        )
-
-        Configuration.__init__(
-            self, Configuration.Configuration(str(uuid.uuid1()), [kitchen, living_room])
-        )

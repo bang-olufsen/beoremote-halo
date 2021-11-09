@@ -25,7 +25,8 @@ import sys
 import time
 from multiprocessing import Process, Semaphore
 
-from beoremote.beoremotehalo import BeoremoteHalo, BeoremoteHaloExmaple
+from beoremote.beoremote_config_example import BeoremoteHaloExmaple
+from beoremote.beoremotehalo import BeoremoteHalo
 from beoremote.buttonEvent import ButtonEvent
 from beoremote.systemEvent import SystemEvent
 from beoremote.text import Text

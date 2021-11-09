@@ -33,8 +33,10 @@ modules = {
 
 patcher = patch.dict("sys.modules")
 patcher.start()
+from beoremote.beoremote_config_example import BeoremoteHaloExmaple
+
 # pylint: disable=wrong-import-position
-from beoremote.beoremotehalo import BeoremoteHalo, BeoremoteHaloExmaple
+from beoremote.beoremotehalo import BeoremoteHalo
 from beoremote.icons import Icons
 from beoremote.update import Update
 from beoremote.updateButton import UpdateButton
