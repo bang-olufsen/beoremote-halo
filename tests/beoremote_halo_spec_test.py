@@ -87,23 +87,21 @@ class MyTestCase(unittest.TestCase):
             r'"default":true}]}]}}'
         )
 
-        button = Configuration.Configuration.Pages.Buttons(
+        button = Configuration.Pages.Buttons(
             "470710e1-8ea1-412a-827d-48ff406cb482",
             "string",
             "string",
             100,
-            Configuration.Configuration.Pages.Buttons.State.ACTIVE,
+            Configuration.Pages.Buttons.State.ACTIVE,
             Text("string"),
             True,
         )
 
-        page = Configuration.Configuration.Pages(
+        page = Configuration.Pages(
             "string", "3d042361-b046-423a-a9f4-8ec4a5952476", [button]
         )
 
-        configuration = Configuration(
-            Configuration.Configuration("497f6eca-6276-4993-bfeb-53cbbbba6f08", [page])
-        )
+        configuration = Configuration("497f6eca-6276-4993-bfeb-53cbbbba6f08", [page])
 
         self.assertEqual(config_string, configuration.to_json())
 
