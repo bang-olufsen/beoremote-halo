@@ -277,21 +277,21 @@ class MyTestCase(unittest.TestCase):
     def test_beoremote_halo_example(self):
         config = BeoremoteHaloExmaple()
 
-        self.assertEqual(len(config.configuration.pages), 2)
-        self.assertEqual(config.configuration.version, "1.0.1")
+        self.assertEqual(len(config.pages()), 2)
+        self.assertEqual(config.version(), "1.0.1")
         self.assertRegex(
-            config.configuration.id,
+            config.id(),
             R"\b[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}\b",
         )
-        self.assertEqual(config.configuration.pages[0].title, "Kitchen")
+        self.assertEqual(config.pages()[0].title, "Kitchen")
         self.assertRegex(
-            config.configuration.pages[0].id,
+            config.pages()[0].id,
             R"\b[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}\b",
         )
-        self.assertEqual(len(config.configuration.pages[0].buttons), 3)
-        self.assertEqual(config.configuration.pages[0].buttons[0].state, "active")
+        self.assertEqual(len(config.pages()[0].buttons), 3)
+        self.assertEqual(config.pages()[0].buttons[0].state, "active")
 
-        self.assertEqual(config.configuration.pages[0].buttons[0].state, "active")
+        self.assertEqual(config.pages()[0].buttons[0].state, "active")
 
     def test_verbose(self):
         remote = BeoremoteHalo("192.168.1.127")
@@ -362,12 +362,12 @@ class MyTestCase(unittest.TestCase):
 
     def test_find_button(self):
         config = BeoremoteHaloExmaple()
-        button = config.configuration.pages[0].buttons[0]
+        button = config.pages()[0].buttons[0]
         self.assertEqual(button, config[button.id])
 
     def test_button_toggle(self):
         config = BeoremoteHaloExmaple()
-        button = config.configuration.pages[0].buttons[0]
+        button = config.pages()[0].buttons[0]
         self.assertEqual("active", button.state)
         button.toggle_state()
         self.assertEqual("inactive", button.state)

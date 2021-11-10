@@ -35,81 +35,79 @@ class BeoremoteHaloExmaple(Configuration):
     """
 
     def __init__(self):
-        kitchen_light = Configuration.Configuration.Pages.Buttons(
+        kitchen_light = Configuration.Pages.Buttons(
             str(uuid.uuid1()),
             "Kitchen Light",
             "On",
             95,
-            Configuration.Configuration.Pages.Buttons.State.ACTIVE,
+            Configuration.Pages.Buttons.State.ACTIVE,
             Icons(Icons.Icon.LIGHTS),
         )
 
-        oven_timer = Configuration.Configuration.Pages.Buttons(
+        oven_timer = Configuration.Pages.Buttons(
             str(uuid.uuid1()),
             "Oven Timer",
             "Temperature 200°C",
             0,
-            Configuration.Configuration.Pages.Buttons.State.INACTIVE,
+            Configuration.Pages.Buttons.State.INACTIVE,
             Text("01:35"),
             True,
         )
 
-        dining_table = Configuration.Configuration.Pages.Buttons(
+        dining_table = Configuration.Pages.Buttons(
             str(uuid.uuid1()),
             "Dining Table",
             "Off",
             80,
-            Configuration.Configuration.Pages.Buttons.State.INACTIVE,
+            Configuration.Pages.Buttons.State.INACTIVE,
             Icons(Icons.Icon.LIGHTS),
         )
 
-        fireplace = Configuration.Configuration.Pages.Buttons(
+        fireplace = Configuration.Pages.Buttons(
             str(uuid.uuid1()),
             "Fire Place",
             "Ignite",
             None,
-            Configuration.Configuration.Pages.Buttons.State.INACTIVE,
+            Configuration.Pages.Buttons.State.INACTIVE,
             Icons(Icons.Icon.LIGHTS),
         )
 
-        blinds = Configuration.Configuration.Pages.Buttons(
+        blinds = Configuration.Pages.Buttons(
             str(uuid.uuid1()),
             "Blinds",
             "Closed",
             100,
-            Configuration.Configuration.Pages.Buttons.State.ACTIVE,
+            Configuration.Pages.Buttons.State.ACTIVE,
             Icons(Icons.Icon.BLINDS),
         )
 
-        tv_back_light = Configuration.Configuration.Pages.Buttons(
+        tv_back_light = Configuration.Pages.Buttons(
             str(uuid.uuid1()),
             "TV Backlight",
             "off",
             0,
-            Configuration.Configuration.Pages.Buttons.State.INACTIVE,
+            Configuration.Pages.Buttons.State.INACTIVE,
             Icons(Icons.Icon.RGB_LIGHTS),
         )
 
-        living_room_thermostat = Configuration.Configuration.Pages.Buttons(
+        living_room_thermostat = Configuration.Pages.Buttons(
             str(uuid.uuid1()),
             "Thermostat",
             "Heating",
             55,
-            Configuration.Configuration.Pages.Buttons.State.INACTIVE,
+            Configuration.Pages.Buttons.State.INACTIVE,
             Text("21°C"),
             True,
         )
 
-        kitchen = Configuration.Configuration.Pages(
+        kitchen = Configuration.Pages(
             "Kitchen", str(uuid.uuid1()), [kitchen_light, oven_timer, dining_table]
         )
 
-        living_room = Configuration.Configuration.Pages(
+        living_room = Configuration.Pages(
             "living room",
             str(uuid.uuid1()),
             [fireplace, blinds, tv_back_light, living_room_thermostat],
         )
 
-        Configuration.__init__(
-            self, Configuration.Configuration(str(uuid.uuid1()), [kitchen, living_room])
-        )
+        Configuration.__init__(self, str(uuid.uuid1()), [kitchen, living_room])

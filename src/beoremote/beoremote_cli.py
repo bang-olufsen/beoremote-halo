@@ -25,6 +25,8 @@ SOFTWARE.
 import click
 
 from beoremote import backend_demo, beoremotehalo, discover
+from beoremote._version import __version__
+from beoremote.configuration import Configuration
 
 
 @click.group()
@@ -61,6 +63,12 @@ def demo(hostname):
 def listen(hostname):
     remote = beoremotehalo.BeoremoteHalo(hostname)
     remote.connect()
+
+
+@cli.command(help="Version")
+def version():
+    print("beoremote-halo package version: {}".format(__version__))
+    print("API version: {}".format(Configuration.__version__))
 
 
 if __name__ == "__main__":

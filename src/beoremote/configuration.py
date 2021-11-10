@@ -29,52 +29,61 @@ from beoremote.entity import Entity
 
 
 class Configuration(Entity):
-    class Configuration(Entity):
-        class Pages(Entity):
-            class Buttons(Entity):
-                class State(str, Enum):
-                    ACTIVE = "active"
-                    INACTIVE = "inactive"
+    __version__ = "1.0.1"
 
-                def __init__(
-                    self,
-                    button_id: str,
-                    title: str,
-                    subtitle: str,
-                    value: int,
-                    state: State,
-                    content,
-                    default: bool = False,
-                ):  # pylint: disable=too-many-arguments
-                    self.id = button_id
-                    self.title = title
-                    self.subtitle = subtitle
-                    self.value = value
-                    self.state = state
-                    self.content = content
-                    self.default = default
+    class Pages(Entity):
+        class Buttons(Entity):
+            class State(str, Enum):
+                ACTIVE = "active"
+                INACTIVE = "inactive"
 
-                def toggle_state(self):
-                    if self.state == self.State.ACTIVE:
-                        self.state = self.State.INACTIVE
-                    else:
-                        self.state = self.State.ACTIVE
-
-            def __init__(self, title: str, page_id: str, buttons: Sequence[Buttons]):
+            def __init__(
+                self,
+                button_id: str,
+                title: str,
+                subtitle: str,
+                value: int,
+                state: State,
+                content,
+                default: bool = False,
+            ):  # pylint: disable=too-many-arguments
+                self.id = button_id
                 self.title = title
-                self.id = page_id
-                self.buttons = buttons
+                self.subtitle = subtitle
+                self.value = value
+                self.state = state
+                self.content = content
+                self.default = default
 
-        def __init__(self, configuration_id: str, pages: Sequence[Pages]):
-            self.version = "1.0.1"
-            self.id = configuration_id
-            self.pages = pages
+            def toggle_state(self):
+                if self.state == self.State.ACTIVE:
+                    self.state = self.State.INACTIVE
+                else:
+                    self.state = self.State.ACTIVE
 
-    def __init__(self, configuration: Configuration):
-        self.configuration = configuration
+        def __init__(self, title: str, page_id: str, buttons: Sequence[Buttons]):
+            self.title = title
+            self.id = page_id
+            self.buttons = buttons
+
+    def __init__(self, configuration_id: str, pages: Sequence[Pages]):
+        self.configuration = {
+            "version": Configuration.__version__,
+            "id": configuration_id,
+            "pages": pages,
+        }
+
+    def pages(self):
+        return self.configuration["pages"]
+
+    def version(self):
+        return self.configuration["version"]
+
+    def id(self):
+        return self.configuration["id"]
 
     def __getitem__(self, item):
-        for page in self.configuration.pages:
+        for page in self.pages():
             for button in page.buttons:
                 if button.id == item:
                     return button
