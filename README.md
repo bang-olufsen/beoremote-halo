@@ -58,7 +58,7 @@ $ beoremote-halo demo --hostname BeoremoteHalo-XXXXXXXX.local
 
 
 
-## "beoremote-halo" usage
+### "beoremote-halo" usage
 Listen for events from Beoremote Halo using the `beoremote-halo` tool. It will create a websocket client and connect to Beoremote Halo on port 8080 and listen for events
 ```
 $ beoremote-halo listen --hostname BeoremoteHalo-XXXXXXXX.local
@@ -67,7 +67,7 @@ Halo -> client: {"event":{"type":"power","capacity":100,"state":"discharging"}}
 Halo -> client: {"event":{"type":"power","capacity":100,"state":"discharging"}}
 ...
  ```
-## Interactive demo
+### Interactive demo
 This demo creates a websocket client to Beoremote Halo on port 8080. Configures Beoremote Halo and reaction to events received from Halo. The callbacks are located here and each handle a specific type of event.
 
 `on_system_event` is provided but unused in this example.
@@ -92,7 +92,7 @@ Client -> Halo: {"update": {"type": "button", "id": "c7f6247f-3260-11ec-bd30-51f
 Halo -> client: {"event":{"type":"status","state":"ok","message":"Update"}}
 ...
 ```
-## Getting started with `beoremote-halo` package
+### Getting started with `beoremote-halo` package
 In the following example a client instance is created and connects to a Beoremote Halo and listens for events. When a `SystemEvent` is received the `on_system_event` callback is executed and prints the Beoremote Halo's system state.
 ```python
 from beoremote.beoremotehalo import BeoremoteHalo
