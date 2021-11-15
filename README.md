@@ -35,7 +35,7 @@ For further details on the Open API including list of commands, examples and ico
 
 Below you will also find some examples in Python to get you started.
 
-## TL;DR
+## Python Package: `beoremote-halo`
 The python package `beoremote-halo` contains a python library for communicating to Beoremote Halo and a command line tool for discovering Beoremote Halo on the network.
 
 Install using pip:
@@ -67,7 +67,7 @@ Halo -> client: {"event":{"type":"power","capacity":100,"state":"discharging"}}
 Halo -> client: {"event":{"type":"power","capacity":100,"state":"discharging"}}
 ...
  ```
-Interactive demo
+## Interactive demo
 This demo creates a websocket client to Beoremote Halo on port 8080. Configures Beoremote Halo and reaction to events received from Halo. The callbacks are located here and each handle a specific type of event.
 
 `on_system_event` is provided but unused in this example.
