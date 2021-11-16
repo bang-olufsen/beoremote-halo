@@ -1,11 +1,11 @@
 asyncapi: 2.0.0
 info:
   title: Home Automation System API for the Bang & Olufsen Beoremote Halo
-  version: 1.0.1
+  version: 1.0.2
   description: |
     The Home Automation System API allows you to interact with a Beoremote Halo.
 
-    Requires Beoremote Halo version 1.3.570
+    Requires Beoremote Halo version 1.4.xyz
 
     ### Client Connection
     * Upon client connection to http socket 8080, a websocket upgrade request is required.
@@ -139,6 +139,8 @@ components:
           enum:
             - alarm
             - alternative
+            - arm_away
+            - arm_instant
             - arm_stay
             - auto
             - bath_tub
@@ -161,6 +163,7 @@ components:
             - entertain
             - fan
             - fireplace
+            - forced_arm
             - gaming
             - garage
             - gate
