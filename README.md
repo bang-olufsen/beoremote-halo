@@ -1,8 +1,10 @@
+
+
 # Beoremote Halo
 
 <img src="https://github.com/bang-olufsen/beoremote-halo/blob/main/Docs/Images/Halo%20CI%20silver%20wall.png" width=40% height=40% align="right">
 
-
+[![License](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
 
 
 Welcome to the public GitHub page for the Bang & Olufsen Beoremote Halo.
