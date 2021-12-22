@@ -57,6 +57,8 @@ Press enter to exit...
 BeoremoteHalo-XXXXXXXX.local
 ...
 ```
+<img src="https://github.com/bang-olufsen/beoremote-halo/blob/anmimated-terminals/Docs/Images/beoremote-halo-scan.gif" align="center">
+
 To tryout the Home Automation controls on Beoremote Halo run the bundle demo using the discovered Beoremote Halo hostname:
 ```
 $ beoremote-halo demo --hostname BeoremoteHalo-XXXXXXXX.local
@@ -98,6 +100,9 @@ Client -> Halo: {"update": {"type": "button", "id": "c7f6247f-3260-11ec-bd30-51f
 Halo -> client: {"event":{"type":"status","state":"ok","message":"Update"}}
 ...
 ```
+
+<img src="https://github.com/bang-olufsen/beoremote-halo/blob/anmimated-terminals/Docs/Images/beoremote-halo-demo.gif" width=100% align="center">
+
 ### Getting started with `beoremote-halo` package
 In the following example a client instance is created and connects to a Beoremote Halo and listens for events. When a `SystemEvent` is received the `on_system_event` callback is executed and prints the Beoremote Halo's system state.
 ```python
