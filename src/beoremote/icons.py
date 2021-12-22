@@ -31,6 +31,7 @@ class Icons(Entity):
     class Icon(str, Enum):
         ALARM = "alarm"
         ALTERNATIVE = "alternative"
+        ARM_AWAY = "arm_away"
         ARM_STAY = "arm_stay"
         AUTO = "auto"
         BATH_TUB = "bath_tub"
@@ -53,6 +54,7 @@ class Icons(Entity):
         ENTERTAIN = "entertain"
         FAN = "fan"
         FIREPLACE = "fireplace"
+        FORCED_ARM = "forced_arm"
         GAMING = "gaming"
         GARAGE = "garage"
         GATE = "gate"

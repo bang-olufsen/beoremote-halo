@@ -4,7 +4,7 @@
 
 <img src="https://github.com/bang-olufsen/beoremote-halo/blob/main/Docs/Images/Halo%20CI%20silver%20wall.png" width=40% height=40% align="right">
 
-[![License](https://img.shields.io/badge/license-MIT-green)](./LICENSE) 
+[![License](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
 [![Version](https://img.shields.io/pypi/v/TeslaPy)](https://pypi.org/project/halo-app)
 ![PyPi](https://img.shields.io/pypi/dm/halo-app)
 
