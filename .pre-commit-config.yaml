@@ -1,0 +1,35 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.2.0
+    hooks:
+    -   id: trailing-whitespace
+    -   id: end-of-file-fixer
+    -   id: check-yaml
+    -   id: name-tests-test
+
+-   repo: https://github.com/psf/black
+    rev: 21.9b0
+    hooks:
+      - id: black
+
+-   repo: https://github.com/PyCQA/isort
+    rev: 5.9.3
+    hooks:
+      - id: isort
+        args: [--profile=black]
+
+-   repo: https://github.com/klieret/jekyll-relative-url-check
+    rev: v2.0.1
+    hooks:
+      -   id: jekyll-relative-url-check-html
+      -   id: jekyll-relative-url-check-markdown
+
+-   repo: https://github.com/pycqa/pylint
+    rev: v2.11.1
+    hooks:
+      -   id: pylint
+          args:
+            - -j0
+            - --disable=C0209,C0116,C0115,E0401,R0801,C0103,R0903,W1202
