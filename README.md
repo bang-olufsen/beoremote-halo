@@ -4,6 +4,7 @@
 [![build](https://github.com/bang-olufsen/beoremote-halo/actions/workflows/ci.yaml/badge.svg?branch=main)](https://github.com/bang-olufsen/beoremote-halo/actions/workflows/ci.yaml)
 [![License](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
 [![Version](https://img.shields.io/pypi/v/beoremote-halo?color=g)](https://pypi.org/project/beoremote-halo)
+[![Downloads](https://img.shields.io/pypi/dm/beoremote-halo)](https://pypi.org/project/beoremote-halo)
 
 
 The [Beoremote Halo](https://www.bang-olufsen.com/en/us/accessories/beoremote-halo) Open API is an open source async API that allows you to interact with a Beoremote Halo from a home automation system.
@@ -36,7 +37,7 @@ def on_system_event(client: Halo, event: SystemEvent):
     print(event)
 
 
-remote = Halo("BeoremoteHalo-XXXXXXXX.local")
+remote = Halo("BeoremoteHalo-xxxxxxxx.local")
 remote.set_on_system_event_callback(on_system_event)
 remote.connect()
 ```
@@ -46,7 +47,15 @@ Use the `beoremote-halo` CLI tool to discover and then run a demo by connecting 
 
 <img src="https://github.com/bang-olufsen/beoremote-halo/raw/main/docs/images/beoremote-halo-demo.gif">
 
-In the above demo the CLI is used to locate Beoremote-Halo on the network. Afterwards the CLI demo is run by passing the host name of a Beoremote-Halo. The demo configures the Beoremote Halo and reacts to events received from Halo. The callbacks each handle a specific type of [event](https://bang-olufsen.github.io/beoremote-halo/#message-event).
+In the above demo the CLI is used to locate Beoremote-Halo on the network.
+```
+beoremote-halo scan
+```
+Afterwards the CLI demo is run by passing the serial number of the discovered Beoremote-Halo.
+```
+beoremote-halo demo --serial xxxxxxxx
+```
+The demo configures the Beoremote Halo and reacts to events received from Halo. The callbacks each handle a specific type of [event](https://bang-olufsen.github.io/beoremote-halo/#message-event).
 
 `on_system_event` is provided but unused in this example.
 
