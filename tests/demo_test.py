@@ -61,7 +61,7 @@ class DemoTestCase(unittest.TestCase):
         process.terminate = MagicMock()
         processes.append(process)
 
-        backend("BeoremoteHalo-xxxxxxxx.local")
+        backend("127.0.0.1")
 
         self.assertTrue(mock_halo.called)
         self.assertTrue(mock_halo.return_value.set_on_status_event_callback.called)
@@ -90,7 +90,7 @@ class DemoTestCase(unittest.TestCase):
 
         mock_halo.return_value.connect.side_effect = signal_side_effect
         with patch("sys.exit") as exit_mock:
-            backend("BeoremoteHalo-xxxxxxxx.local")
+            backend("127.0.0.1")
             self.assertTrue(exit_mock.called)
 
         self.assertTrue(mock_halo.called)

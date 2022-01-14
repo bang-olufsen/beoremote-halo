@@ -151,6 +151,10 @@ def demo(ip, serial):
         click.echo(demo.get_help(click.get_current_context()))
         sys.exit(0)
 
+    if ip and not re.match(R"\d+\.\d+\.\d+\.\d+", ip):
+        click.echo("Incorrect IPv4 format: {}".format(ip))
+        sys.exit(0)
+
     if serial:
         ip = serial_to_ip(serial)
 
@@ -177,6 +181,10 @@ def demo(ip, serial):
 def listen(ip, serial):
     if not ip and not serial:
         click.echo(demo.get_help(click.get_current_context()))
+        sys.exit(0)
+
+    if ip and not re.match(R"\d+\.\d+\.\d+\.\d+", ip):
+        click.echo("Incorrect IPv4 format: {}".format(ip))
         sys.exit(0)
 
     if serial:

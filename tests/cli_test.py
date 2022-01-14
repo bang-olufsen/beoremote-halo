@@ -78,6 +78,13 @@ class BeoremoteHaloCliTest(unittest.TestCase):
 
         self.assertEqual(0, mock_halo.call_count)
 
+    @patch("beoremote.halo.Halo")
+    def test_cli_scan_serial_use_ip(self, mock_halo: MagicMock):
+        runner = CliRunner()
+
+        runner.invoke(cli, ["listen", "--ip=12345678"])
+        self.assertFalse(mock_halo.called)
+
     @patch("beoremote.cli.backend.backend")
     def test_cli_demo(self, mock_demo):
         runner = CliRunner()
@@ -113,6 +120,12 @@ class BeoremoteHaloCliTest(unittest.TestCase):
         runner = CliRunner()
         runner.invoke(cli, ["demo", "--serial=a2345678"])
 
+        self.assertFalse(mock_demo.called)
+
+    @patch("beoremote.cli.backend.backend")
+    def test_cli_demo_serial_use_ip(self, mock_demo: MagicMock):
+        runner = CliRunner()
+        runner.invoke(cli, ["demo", "--ip=12345678"])
         self.assertFalse(mock_demo.called)
 
     @patch("beoremote.cli.backend.backend")
