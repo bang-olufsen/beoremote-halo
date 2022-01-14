@@ -37,7 +37,7 @@ def on_system_event(client: Halo, event: SystemEvent):
     print(event)
 
 
-remote = Halo("BeoremoteHalo-xxxxxxxx.local")
+remote = Halo("192.168.1.57")
 remote.set_on_system_event_callback(on_system_event)
 remote.connect()
 ```
