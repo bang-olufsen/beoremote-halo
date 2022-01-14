@@ -24,6 +24,8 @@ SOFTWARE.
 import unittest
 from unittest.mock import MagicMock, patch
 
+from websocket import WebSocketConnectionClosedException
+
 MockWebsocket = MagicMock()
 modules = {
     "rel": MagicMock(),
@@ -337,6 +339,20 @@ class MyTestCase(unittest.TestCase):
         remote.sendQueue.get_nowait.assert_called()
         remote.sendQueue.empty.assert_called()
         self.assertTrue(mock_rel.signal.called)
+
+    @patch("beoremote.halo.rel")
+    def test_client_websocket_raise(self, mock_rel: MagicMock):
+        mock_rel.signal = MagicMock()
+        remote = Halo("192.168.1.127")
+        remote.websocket = MagicMock()
+
+        mock_rel.dispatch = MagicMock()
+        mock_rel.dispatch.side_effect = unittest.mock.Mock(
+            side_effect=WebSocketConnectionClosedException
+        )
+        with patch("sys.exit") as exit_mock:
+            remote.connect()
+            self.assertTrue(exit_mock.called)
 
     def test_send_events_exception(self):
         remote = Halo("192.168.1.127")

@@ -75,10 +75,10 @@ def serial_to_ip(serial: str) -> str:
                     serial
                 )
             )
-            sys.exit(1)
+            sys.exit(0)
     else:
         click.echo("{} is not a valid serial number".format(serial))
-        sys.exit(1)
+        sys.exit(0)
     return ip
 
 

@@ -25,6 +25,7 @@ SOFTWARE.
 import logging
 import multiprocessing
 import re
+import sys
 import time
 from threading import Thread
 
@@ -294,7 +295,10 @@ class Halo:  # pylint: disable=too-many-instance-attributes
             worker = Thread(target=self.send_events, args=(self.sendQueue,))
             worker.daemon = True
             worker.start()
-            rel.dispatch()
+            try:
+                rel.dispatch()
+            except websocket.WebSocketConnectionClosedException:
+                sys.exit(0)
 
             self.reconnect_attempts = self.reconnect_attempts - 1
             self.configured = False
