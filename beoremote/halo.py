@@ -23,15 +23,21 @@ SOFTWARE.
 """
 
 import logging
+import multiprocessing
 import re
+import sys
 import time
+from threading import Thread
 
+import rel
 import websocket
 
 from beoremote.configuration import Configuration
 from beoremote.events.event import Event
 from beoremote.events.statusEvent import StatusEvent
 from beoremote.events.systemEvent import SystemEvent
+
+rel.safe_read()
 
 
 class Halo:  # pylint: disable=too-many-instance-attributes
@@ -57,7 +63,7 @@ class Halo:  # pylint: disable=too-many-instance-attributes
         """
         self.websocket = websocket.WebSocketApp(
             "ws://{0}:8080".format(host),
-            # on_open=on_open,
+            on_open=self.on_open,
             on_message=self.on_message,
             on_close=self.on_close,
         )
@@ -68,10 +74,14 @@ class Halo:  # pylint: disable=too-many-instance-attributes
         self.on_button_event = None
         self.on_wheel_event = None
         self.on_close_event = None
+        self.on_connection_open = None
         self.reconnect = True
         self.configured = False
         self.reconnect_attempts = 3
+        self.reconnect_backoff_timeout = 30
         self.attempts = 3
+        self.manager = multiprocessing.Manager()
+        self.sendQueue = self.manager.Queue()
         self.ping_interval = 30
         self.ping_timeout = 5
         self.events = any(
@@ -83,6 +93,12 @@ class Halo:  # pylint: disable=too-many-instance-attributes
                 self.on_wheel_event,
             ]
         )
+
+    def set_reconnect_backoff_timeout(self, timeout: int):
+        """
+        :param timeout: Configuration reconnect backoff timeout
+        """
+        self.reconnect_backoff_timeout = timeout
 
     def set_configuration(self, configuration: Configuration):
         """
@@ -136,6 +152,21 @@ class Halo:  # pylint: disable=too-many-instance-attributes
         self.attempts = attempts
         self.reconnect_attempts = attempts
 
+    def set_on_connected(self, on_connected):
+        """
+        :param on_connected: Callback when websocket is opened
+        """
+        self.on_connection_open = on_connected
+
+    def on_open(self, web_socket) -> None:
+        """
+        Calling the on_connected callback if configured when the websocket is opened
+        :param web_socket: websocket.WebSocketApp handle
+        """
+        del web_socket
+        if self.on_connection_open:
+            self.on_connection_open()
+
     def on_message(self, web_socket, message) -> None:
         """
         Handling incoming messages from Beoremote Halo and directing them to callbacks
@@ -188,8 +219,7 @@ class Halo:  # pylint: disable=too-many-instance-attributes
         :param message: Either a Configuration or Update
         """
         message = message if isinstance(message, str) else str(message)
-        logging.debug("Client -> Halo: {}".format(message))
-        self.websocket.send(message)
+        self.sendQueue.put(message)
 
     def on_close(self, web_socket, close_status_code, close_msg):
         """
@@ -238,14 +268,38 @@ class Halo:  # pylint: disable=too-many-instance-attributes
         ):
             self.send(self.configuration)
 
+    def close_connection(self):
+        rel.signal(2, rel.abort)
+        while not self.sendQueue.empty():
+            self.sendQueue.get_nowait()
+
+    def send_events(self, send_queue):
+        try:
+            while True:
+                event = send_queue.get(block=True)
+                logging.debug("Client -> Halo: {}".format(event))
+                self.websocket.send(event)
+        except Exception:
+            pass
+
     def connect(self):
         """
         Connect to Beoremote Halo
         """
         while self.reconnect and self.reconnect_attempts > 0:
             status = self.websocket.run_forever(
-                ping_interval=self.ping_interval, ping_timeout=self.ping_timeout
+                ping_interval=self.ping_interval,
+                ping_timeout=self.ping_timeout,
+                dispatcher=rel,
             )
+            worker = Thread(target=self.send_events, args=(self.sendQueue,))
+            worker.daemon = True
+            worker.start()
+            try:
+                rel.dispatch()
+            except websocket.WebSocketConnectionClosedException:
+                sys.exit(0)
+
             self.reconnect_attempts = self.reconnect_attempts - 1
             self.configured = False
             if status is True and self.reconnect:
@@ -253,6 +307,6 @@ class Halo:  # pylint: disable=too-many-instance-attributes
                     "### Connection to server lost, retrying again in 30 seconds ({}/{} attempts) "
                     "###".format(self.attempts - self.reconnect_attempts, self.attempts)
                 )
-                time.sleep(30)  # wait 30 second before trying to reconnect
+                time.sleep(self.reconnect_backoff_timeout)
             else:
                 self.reconnect = False

@@ -41,6 +41,18 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(mock_serviceBrowser.call_args.args[1], "_zenith._tcp.local.")
         self.assertEqual(1, mock_zeroconf.return_value.close.call_count)
 
+    @patch("time.sleep")
+    @patch("beoremote.cli.discover.Zeroconf")
+    @patch("beoremote.cli.discover.ServiceBrowser")
+    def test_discover_timeout(self, mock_serviceBrowser, mock_zeroconf, mock_sleep):
+        discover(5)
+
+        self.assertEqual(1, mock_sleep.call_count)
+        mock_sleep.assert_called_with(5)
+        self.assertEqual(1, mock_serviceBrowser.call_count)
+        self.assertEqual(mock_serviceBrowser.call_args.args[1], "_zenith._tcp.local.")
+        self.assertEqual(1, mock_zeroconf.return_value.close.call_count)
+
     @patch("builtins.input")
     @patch("beoremote.cli.discover.Zeroconf")
     @patch("beoremote.cli.discover.ServiceBrowser")
@@ -61,12 +73,12 @@ class MyTestCase(unittest.TestCase):
         # zero_conf.get_service_info = MagicMock()
         zero_conf.get_service_info.return_value = ServiceInfo(
             type_="_zenith._tcp.local.",
-            name="BeoremoteHalo-33284713._zenith._tcp.local.",
+            name="BeoremoteHalo-xxxxxxxx._zenith._tcp.local.",
             addresses=[b"\n\xdf\xcf\x88"],
             port=80,
             weight=0,
             priority=0,
-            server="BeoremoteHalo-XXXXXXXX.local.",
+            server="BeoremoteHalo-xxxxxxxx.local.",
             properties={
                 b"mac": b"00:09:A7:37:E0:DF",
                 b"type": b"3054",
@@ -82,7 +94,7 @@ class MyTestCase(unittest.TestCase):
 
         self.assertTrue(mock_print.called)
         self.assertTrue(zero_conf.get_service_info.called)
-        mock_print.assert_called_with("BeoremoteHalo-XXXXXXXX.local")
+        mock_print.assert_called_with("Serial: xxxxxxxx, 10.223.207.136")
 
     def test_BeoremoteHaloListener_remove_service(self):
         conf_type = "_zenith._tcp.local."
@@ -92,12 +104,12 @@ class MyTestCase(unittest.TestCase):
         # zero_conf.get_service_info = MagicMock()
         zero_conf.get_service_info.return_value = ServiceInfo(
             type_="_zenith._tcp.local.",
-            name="BeoremoteHalo-33284713._zenith._tcp.local.",
+            name="BeoremoteHalo-xxxxxxxx._zenith._tcp.local.",
             addresses=[b"\n\xdf\xcf\x88"],
             port=80,
             weight=0,
             priority=0,
-            server="BeoremoteHalo-XXXXXXXX.local.",
+            server="BeoremoteHalo-xxxxxxxx.local.",
             properties={
                 b"mac": b"00:09:A7:37:E0:DF",
                 b"type": b"3054",
@@ -114,18 +126,18 @@ class MyTestCase(unittest.TestCase):
 
     def test_BeoremoteHaloListener_update_service(self):
         conf_type = "_zenith._tcp.local."
-        name = "BeoremoteHalo-XXXXXXXX._zenith._tcp.local."
+        name = "BeoremoteHalo-xxxxxxxx._zenith._tcp.local."
         zero_conf = MagicMock()
 
         # zero_conf.get_service_info = MagicMock()
         zero_conf.get_service_info.return_value = ServiceInfo(
             type_="_zenith._tcp.local.",
-            name="BeoremoteHalo-33284713._zenith._tcp.local.",
+            name="BeoremoteHalo-xxxxxxxx._zenith._tcp.local.",
             addresses=[b"\n\xdf\xcf\x88"],
             port=80,
             weight=0,
             priority=0,
-            server="BeoremoteHalo-XXXXXXXX.local.",
+            server="BeoremoteHalo-xxxxxxxx.local.",
             properties={
                 b"mac": b"00:09:A7:37:E0:DF",
                 b"type": b"3054",

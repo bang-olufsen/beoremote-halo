@@ -21,6 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
+import signal
 import unittest
 from unittest.mock import MagicMock, patch
 
@@ -60,7 +61,37 @@ class DemoTestCase(unittest.TestCase):
         process.terminate = MagicMock()
         processes.append(process)
 
-        backend("BeoremoteHalo-XXXXXXXX.local")
+        backend("127.0.0.1")
+
+        self.assertTrue(mock_halo.called)
+        self.assertTrue(mock_halo.return_value.set_on_status_event_callback.called)
+        self.assertTrue(mock_halo.return_value.set_on_system_event_callback.called)
+        self.assertTrue(mock_halo.return_value.set_on_power_event_callback.called)
+        self.assertTrue(mock_halo.return_value.set_on_button_event_callback.called)
+        self.assertTrue(mock_halo.return_value.set_on_wheel_event_callback.called)
+        self.assertTrue(mock_halo.return_value.set_configuration.called)
+        self.assertTrue(mock_halo.return_value.set_on_connected.called)
+        self.assertTrue(mock_halo.return_value.connect.called)
+
+        process.terminate.assert_called_once()
+        processes.pop()
+
+    @patch("beoremote.cli.backend.Halo")
+    def test_backend_sigint(self, mock_halo):
+        process = MagicMock()
+        process.terminate = MagicMock()
+        processes.append(process)
+
+        mock_halo.connect = MagicMock()
+
+        def signal_side_effect(*args, **kwargs):
+            del args, kwargs
+            signal.raise_signal(signal.SIGINT)
+
+        mock_halo.return_value.connect.side_effect = signal_side_effect
+        with patch("sys.exit") as exit_mock:
+            backend("127.0.0.1")
+            self.assertTrue(exit_mock.called)
 
         self.assertTrue(mock_halo.called)
         self.assertTrue(mock_halo.return_value.set_on_status_event_callback.called)
@@ -121,50 +152,26 @@ class DemoTestCase(unittest.TestCase):
 
     @patch("time.sleep")
     def test_oven_timer_function(self, mock_sleep):
-        mock_halo = MagicMock()
-        mock_halo.send = MagicMock()
+        mock_queue = MagicMock()
+        mock_queue.put = MagicMock()
         text = Text("00:03")
-        oven_timer_function(mock_halo, "cf4c7ccf-866c-4e73-bae3-e8a296d5562b", text)
+        oven_timer_function(mock_queue, "cf4c7ccf-866c-4e73-bae3-e8a296d5562b", text)
 
         self.assertTrue(mock_sleep.called)
-        self.assertEqual(4, mock_halo.send.call_count)
-        self.assertEqual(
-            "cf4c7ccf-866c-4e73-bae3-e8a296d5562b",
-            mock_halo.send.call_args_list[0].args[0].update.id,
-        )
-        self.assertEqual(
-            "cf4c7ccf-866c-4e73-bae3-e8a296d5562b",
-            mock_halo.send.call_args_list[1].args[0].update.id,
-        )
-        self.assertEqual(
-            "cf4c7ccf-866c-4e73-bae3-e8a296d5562b",
-            mock_halo.send.call_args_list[2].args[0].update.id,
-        )
-        self.assertEqual(
-            "cf4c7ccf-866c-4e73-bae3-e8a296d5562b",
-            mock_halo.send.call_args_list[3].args[0].update.id,
-        )
+        self.assertEqual(4, mock_queue.put.call_count)
 
-        self.assertEqual(
-            "00:03", mock_halo.send.call_args_list[0].args[0].update.content.text
-        )
-        self.assertEqual(
-            "00:02", mock_halo.send.call_args_list[1].args[0].update.content.text
-        )
-        self.assertEqual(
-            "00:01", mock_halo.send.call_args_list[2].args[0].update.content.text
-        )
-        self.assertEqual(
-            "00:00", mock_halo.send.call_args_list[3].args[0].update.content.text
-        )
+        self.assertRegex(mock_queue.put.call_args_list[0].args[0], "00:03")
+        self.assertRegex(mock_queue.put.call_args_list[1].args[0], "00:02")
+        self.assertRegex(mock_queue.put.call_args_list[2].args[0], "00:01")
+        self.assertRegex(mock_queue.put.call_args_list[3].args[0], "00:00")
 
     @patch("time.sleep")
     def test_oven_timer_function_exception(self, mock_sleep):
-        mock_halo = MagicMock()
-        mock_halo.send = MagicMock()
+        mock_queue = MagicMock()
+        mock_queue.put = MagicMock()
         text = Text("00:03")
-        mock_halo.send.side_effect = unittest.mock.Mock(side_effect=KeyboardInterrupt())
-        oven_timer_function(mock_halo, "cf4c7ccf-866c-4e73-bae3-e8a296d5562b", text)
+        mock_queue.put.side_effect = unittest.mock.Mock(side_effect=KeyboardInterrupt())
+        oven_timer_function(mock_queue, "cf4c7ccf-866c-4e73-bae3-e8a296d5562b", text)
         self.assertFalse(mock_sleep.called)
 
     def test_on_button_event(self):

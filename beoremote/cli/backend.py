@@ -22,6 +22,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 import logging
+import queue
+import signal
+import sys
 import time
 from multiprocessing import Process, Semaphore
 
@@ -104,10 +107,9 @@ def on_wheel_event(client: Halo, event: WheelEvent):
         client.send(update)
 
 
-def oven_timer_function(client: Halo, button_id: str, content: Text):
+def oven_timer_function(send_queue: queue.Queue, button_id: str, content: Text):
     """
-
-    :param client: Client handle to communicate with Beoremote Halo
+    :param send_queue: queue handle to communicate with Beoremote Halo
     :param button_id: Uuid of button to update
     :param content: Text content of the button to update
     """
@@ -128,7 +130,7 @@ def oven_timer_function(client: Halo, button_id: str, content: Text):
                         content=content,
                     )
                 )
-                client.send(update)
+                send_queue.put(str(update))
                 time.sleep(1)
             seconds = 59
     except KeyboardInterrupt:
@@ -167,7 +169,7 @@ def on_button_event(client: Halo, event: ButtonEvent):
                 else:
                     proc = Process(
                         target=oven_timer_function,
-                        args=(client, event.id, button.content),
+                        args=(client.sendQueue, event.id, button.content),
                     )
                     oven_timer["running"] = True
                     processes.append(proc)
@@ -182,6 +184,14 @@ def backend(hostname: str):
     remote.set_on_button_event_callback(on_button_event)
     remote.set_on_wheel_event_callback(on_wheel_event)
     remote.set_configuration(config)
+    remote.set_on_connected(lambda: print("Demo connected to: {}".format(hostname)))
+
+    def signal_handler(sig, frame):
+        del sig, frame
+        remote.close_connection()
+        sys.exit(0)
+
+    signal.signal(signal.SIGINT, signal_handler)
 
     remote.connect()
     for process in processes:

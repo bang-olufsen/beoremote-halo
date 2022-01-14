@@ -24,8 +24,11 @@ SOFTWARE.
 import unittest
 from unittest.mock import MagicMock, patch
 
+from websocket import WebSocketConnectionClosedException
+
 MockWebsocket = MagicMock()
 modules = {
+    "rel": MagicMock(),
     "websocket": MockWebsocket,
     "websocket.WebSocketApp": MockWebsocket.WebSocketApp,
     "time": MagicMock,
@@ -45,25 +48,32 @@ from beoremote.halo import Halo
 class MyTestCase(unittest.TestCase):
     @patch("time.sleep")
     @patch("websocket.WebSocketApp.run_forever")
-    def test_reconnect(self, mock_run_forever, mock_sleep):
+    @patch("beoremote.halo.rel")
+    def test_reconnect(self, mock_rel, mock_run_forever, mock_sleep):
         mock_run_forever.return_value = True
 
         remote = Halo("192.168.1.127")
+        remote.set_reconnect_backoff_timeout(5)
         remote.connect()
 
-        mock_sleep.assert_called_with(30)
-        mock_run_forever.assert_called_with(ping_interval=30, ping_timeout=5)
+        mock_sleep.assert_called_with(5)
+        mock_run_forever.assert_called_with(
+            ping_interval=30, ping_timeout=5, dispatcher=mock_rel
+        )
         self.assertEqual(3, mock_run_forever.call_count)
         self.assertEqual(3, mock_sleep.call_count)
 
     @patch("time.sleep")
     @patch("websocket.WebSocketApp.run_forever")
-    def test_connect_closing(self, mock_run_forever, mock_sleep):
+    @patch("beoremote.halo.rel")
+    def test_connect_closing(self, mock_rel, mock_run_forever, mock_sleep):
         mock_run_forever.return_value = False
 
         remote = Halo("192.168.1.127")
         remote.connect()
-        mock_run_forever.assert_called_with(ping_interval=30, ping_timeout=5)
+        mock_run_forever.assert_called_with(
+            ping_interval=30, ping_timeout=5, dispatcher=mock_rel
+        )
         self.assertEqual(1, mock_run_forever.call_count)
         self.assertEqual(0, mock_sleep.call_count)
 
@@ -111,7 +121,8 @@ class MyTestCase(unittest.TestCase):
 
         remote.websocket.send = mock_send
         remote.websocket.run_forever = mock_run_forever
-
+        remote.sendQueue = MagicMock()
+        remote.sendQueue.put = MagicMock()
         remote.connect()
 
         config_string = (
@@ -144,8 +155,8 @@ class MyTestCase(unittest.TestCase):
             R'"default":true\}\]\}\]\}\}'
         )
 
-        self.assertRegex(mock_send.call_args.args[0], config_string)
-        self.assertTrue(mock_send.called)
+        self.assertRegex(remote.sendQueue.put.call_args.args[0], config_string)
+        self.assertTrue(remote.sendQueue.put.called)
         self.assertTrue(mock_run_forever.called)
         self.assertFalse(websocket.called)
 
@@ -228,6 +239,9 @@ class MyTestCase(unittest.TestCase):
         remote.websocket.send = mock_send
         remote.websocket.run_forever = mock_run_forever
 
+        remote.sendQueue = MagicMock()
+        remote.sendQueue.put = MagicMock()
+
         remote.connect()
 
         config_string = (
@@ -260,8 +274,8 @@ class MyTestCase(unittest.TestCase):
             R'"default":true\}\]\}\]\}\}'
         )
 
-        self.assertRegex(mock_send.call_args.args[0], config_string)
-        self.assertTrue(mock_send.called)
+        self.assertRegex(remote.sendQueue.put.call_args.args[0], config_string)
+        self.assertTrue(remote.sendQueue.put.called)
         self.assertTrue(mock_run_forever.called)
         self.assertFalse(websocket.called)
         self.assertEqual(1, mock_run_forever.call_count)
@@ -285,8 +299,7 @@ class MyTestCase(unittest.TestCase):
 
         self.assertEqual(config.pages()[0].buttons[0].state, "active")
 
-    @patch("websocket.WebSocketApp.send")
-    def test_send(self, send):
+    def test_send(self):
         remote = Halo("192.168.1.127")
         button = Update(
             UpdateButton(
@@ -299,10 +312,11 @@ class MyTestCase(unittest.TestCase):
             )
         )
 
-        remote.send(button)
+        remote.sendQueue = MagicMock()
+        remote.sendQueue.put = MagicMock()
 
-        assert send.called
-        self.assertEqual(1, send.call_count)
+        remote.send(button)
+        self.assertTrue(remote.sendQueue.put.called)
 
     def test_close(self):  # pylint: disable=redefined-builtin
         mock_close_callback = MagicMock()
@@ -311,6 +325,53 @@ class MyTestCase(unittest.TestCase):
         remote.on_close(None, None, None)
         mock_close_callback.assert_called_with(None, None)
         self.assertEqual(1, mock_close_callback.call_count)
+
+    @patch("beoremote.halo.rel")
+    def test_client_side_close(self, mock_rel: MagicMock):
+        mock_rel.signal = MagicMock()
+        remote = Halo("192.168.1.127")
+        remote.websocket = MagicMock()
+        remote.sendQueue = MagicMock()
+        remote.sendQueue.empty = MagicMock()
+        remote.sendQueue.get_nowait = MagicMock()
+        remote.sendQueue.empty.side_effect = [False, True]
+        remote.close_connection()
+        remote.sendQueue.get_nowait.assert_called()
+        remote.sendQueue.empty.assert_called()
+        self.assertTrue(mock_rel.signal.called)
+
+    @patch("beoremote.halo.rel")
+    def test_client_websocket_raise(self, mock_rel: MagicMock):
+        mock_rel.signal = MagicMock()
+        remote = Halo("192.168.1.127")
+        remote.websocket = MagicMock()
+
+        mock_rel.dispatch = MagicMock()
+        mock_rel.dispatch.side_effect = unittest.mock.Mock(
+            side_effect=WebSocketConnectionClosedException
+        )
+        with patch("sys.exit") as exit_mock:
+            remote.connect()
+            self.assertTrue(exit_mock.called)
+
+    def test_send_events_exception(self):
+        remote = Halo("192.168.1.127")
+        remote.websocket = MagicMock()
+        remote.websocket.send = MagicMock()
+        mock_queue = MagicMock()
+        mock_queue.get = MagicMock()
+        mock_queue.get.side_effect = unittest.mock.Mock(side_effect=Exception())
+        remote.send_events(mock_queue)
+        self.assertTrue(mock_queue.get.called)
+        self.assertFalse(remote.websocket.send.called)
+
+    def test_on_connected_callback(self):
+        remote = Halo("192.168.1.127")
+        remote.websocket = MagicMock()
+        mock_connected = MagicMock()
+        remote.set_on_connected(mock_connected)
+        remote.on_open(None)
+        self.assertTrue(mock_connected.called)
 
     def test_on_message(self):
         on_system_event = MagicMock()
