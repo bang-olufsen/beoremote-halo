@@ -47,11 +47,11 @@ Use the `beoremote-halo` CLI tool to discover and then run a demo by connecting 
 
 <img src="https://github.com/bang-olufsen/beoremote-halo/raw/main/docs/images/beoremote-halo-demo.gif">
 
-In the above demo the CLI is used to locate Beoremote-Halo on the network.
+In the above demo the CLI is used to locate Beoremote Halo on the network.
 ```
 beoremote-halo scan
 ```
-Afterwards the CLI demo is run by passing the serial number of the discovered Beoremote-Halo.
+Afterwards the CLI demo is run by passing the serial number of the discovered Beoremote Halo.
 ```
 beoremote-halo demo --serial xxxxxxxx
 ```
